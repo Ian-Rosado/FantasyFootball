@@ -1,0 +1,577 @@
+season,overall,round,espnTeam,espnOwner,ffOwner,player,bid,keeper
+2023,1,1,,metsfan21,ajg21,Travis Kelce,66,false
+2023,2,1,,Zach82460,zach_montoya,Cooper Kupp,66,false
+2023,3,1,,ESPNFAN7620023575,levp,Austin Ekeler,71,false
+2023,4,1,,metsfan21,ajg21,Justin Jefferson,78,false
+2023,5,1,,ESPNFAN4373227268,Chance145,Christian McCaffrey,71,false
+2023,6,1,,IanP123,Iyano1911,Jonathan Taylor,58,false
+2023,7,1,,Michael Oxmall,Brotesk,Ja'Marr Chase,73,false
+2023,8,1,,maxdawkins,madmax101010,Bijan Robinson,64,false
+2023,9,1,,ESPNFAN7620023575,levp,A.J. Brown,52,false
+2023,10,1,,ESPNFAN1932809868,Joles,Saquon Barkley,58,false
+2023,11,1,,IanP123,Iyano1911,Davante Adams,55,false
+2023,12,1,,Growney11,Ryan505,CeeDee Lamb,55,false
+2023,13,2,,Michael Oxmall,Brotesk,Patrick Mahomes,43,false
+2023,14,2,,Zach82460,zach_montoya,Josh Jacobs,46,false
+2023,15,2,,Gerk11,JGERK,Tyreek Hill,65,false
+2023,16,2,,ESPNFAN4373227268,Chance145,Stefon Diggs,50,false
+2023,17,2,,Growney11,Ryan505,Derrick Henry,56,false
+2023,18,2,,Michael Oxmall,Brotesk,Breece Hall,37,false
+2023,19,2,,KillerMiller8,SimonMiller,Travis Etienne Jr.,38,false
+2023,20,2,,maxdawkins,madmax101010,Garrett Wilson,37,false
+2023,21,2,,KillerMiller8,SimonMiller,Jalen Hurts,32,false
+2023,22,2,,KillerMiller8,SimonMiller,Tony Pollard,41,false
+2023,23,2,,Growney11,Ryan505,Jaylen Waddle,41,false
+2023,24,2,,ESPNFAN1932809868,Joles,Josh Allen,33,false
+2023,25,3,,Gerk11,JGERK,Nick Chubb,41,false
+2023,26,3,,Michael Oxmall,Brotesk,Tee Higgins,34,false
+2023,27,3,,ESPNFAN7620023575,levp,Najee Harris,26,false
+2023,28,3,,Zach82460,zach_montoya,Amon-Ra St. Brown,43,false
+2023,29,3,,maxdawkins,madmax101010,DK Metcalf,29,false
+2023,30,3,,KillerMiller8,SimonMiller,Joe Mixon,25,false
+2023,31,3,,metsfan21,ajg21,J.K. Dobbins,24,false
+2023,32,3,,ESPNFAN1932809868,Joles,Rhamondre Stevenson,27,false
+2023,33,3,,Gerk11,JGERK,Jahmyr Gibbs,23,false
+2023,34,3,,maxdawkins,madmax101010,Justin Herbert,9,false
+2023,35,3,,ESPNFAN1932809868,Joles,Aaron Jones,33,false
+2023,36,3,,ESPNFAN7620023575,levp,Chris Olave,27,false
+2023,37,4,,ESPNFAN4373227268,Chance145,DeVonta Smith,28,false
+2023,38,4,,IanP123,Iyano1911,Christian Watson,18,false
+2023,39,4,,maxdawkins,madmax101010,Miles Sanders,16,false
+2023,40,4,,Zach82460,zach_montoya,Dameon Pierce,19,false
+2023,41,4,,Growney11,Ryan505,Evan Engram,5,false
+2023,42,4,,ESPNFAN8773629562,BurrowingMule,Lamar Jackson,17,false
+2023,43,4,,ESPNFAN8773629562,BurrowingMule,Rachaad White,7,false
+2023,44,4,,ESPNFAN8773629562,BurrowingMule,Keenan Allen,22,false
+2023,45,4,,ESPNFAN1932809868,Joles,Amari Cooper,16,false
+2023,46,4,,ESPNFAN8773629562,BurrowingMule,Jerry Jeudy,14,false
+2023,47,4,,metsfan21,ajg21,Joe Burrow,15,false
+2023,48,4,,KillerMiller8,SimonMiller,Deebo Samuel,21,false
+2023,49,5,,ESPNFAN8773629562,BurrowingMule,Mark Andrews,26,false
+2023,50,5,,IanP123,Iyano1911,T.J. Hockenson,8,false
+2023,51,5,,Zach82460,zach_montoya,Treylon Burks,8,false
+2023,52,5,,ESPNFAN4373227268,Chance145,Chris Godwin,16,false
+2023,53,5,,KillerMiller8,SimonMiller,Mike Evans,12,false
+2023,54,5,,Gerk11,JGERK,Kenneth Walker III,19,false
+2023,55,5,,ESPNFAN8773629562,BurrowingMule,Alvin Kamara,16,false
+2023,56,5,,maxdawkins,madmax101010,Terry McLaurin,16,false
+2023,57,5,,IanP123,Iyano1911,Diontae Johnson,13,false
+2023,58,5,,Gerk11,JGERK,Odell Beckham Jr.,3,false
+2023,59,5,,ESPNFAN8773629562,BurrowingMule,Alexander Mattison,20,false
+2023,60,5,,ESPNFAN7620023575,levp,George Kittle,10,false
+2023,61,6,,ESPNFAN8773629562,BurrowingMule,DeAndre Hopkins,30,false
+2023,62,6,,Gerk11,JGERK,Marquise Brown,13,false
+2023,63,6,,maxdawkins,madmax101010,Chigoziem Okonkwo,4,false
+2023,64,6,,Gerk11,JGERK,DJ Moore,9,false
+2023,65,6,,ESPNFAN1932809868,Joles,Darren Waller,7,false
+2023,66,6,,Growney11,Ryan505,Mike Williams,13,false
+2023,67,6,,ESPNFAN8773629562,BurrowingMule,Dalvin Cook,13,false
+2023,68,6,,Gerk11,JGERK,James Conner,18,false
+2023,69,6,,ESPNFAN4373227268,Chance145,Isiah Pacheco,13,false
+2023,70,6,,IanP123,Iyano1911,AJ Dillon,8,false
+2023,71,6,,ESPNFAN8773629562,BurrowingMule,Cam Akers,19,false
+2023,72,6,,IanP123,Iyano1911,D'Andre Swift,8,false
+2023,73,7,,IanP123,Iyano1911,Calvin Ridley,14,false
+2023,74,7,,Growney11,Ryan505,Justin Fields,10,false
+2023,75,7,,Zach82460,zach_montoya,Tyler Higbee,1,false
+2023,76,7,,ESPNFAN1932809868,Joles,Tyler Lockett,7,false
+2023,77,7,,maxdawkins,madmax101010,David Montgomery,12,false
+2023,78,7,,KillerMiller8,SimonMiller,Dallas Goedert,6,false
+2023,79,7,,IanP123,Iyano1911,Drake London,10,false
+2023,80,7,,ESPNFAN1932809868,Joles,Brandon Aiyuk,6,false
+2023,81,7,,ESPNFAN4373227268,Chance145,Deshaun Watson,5,false
+2023,82,7,,ESPNFAN1932809868,Joles,Antonio Gibson,5,false
+2023,83,7,,ESPNFAN8773629562,BurrowingMule,Michael Pittman Jr.,6,false
+2023,84,7,,metsfan21,ajg21,Trevor Lawrence,4,false
+2023,85,8,,Growney11,Ryan505,Christian Kirk,4,false
+2023,86,8,,ESPNFAN4373227268,Chance145,Pat Freiermuth,3,false
+2023,87,8,,ESPNFAN1932809868,Joles,Romeo Doubs,2,false
+2023,88,8,,KillerMiller8,SimonMiller,Kyle Pitts,6,false
+2023,89,8,,KillerMiller8,SimonMiller,Cowboys D/ST,2,false
+2023,90,8,,metsfan21,ajg21,Brandin Cooks,3,false
+2023,91,8,,ESPNFAN8773629562,BurrowingMule,Michael Thomas,5,false
+2023,92,8,,maxdawkins,madmax101010,Jahan Dotson,3,false
+2023,93,8,,Growney11,Ryan505,James Cook,5,false
+2023,94,8,,maxdawkins,madmax101010,Khalil Herbert,3,false
+2023,95,8,,metsfan21,ajg21,Jakobi Meyers,1,false
+2023,96,8,,ESPNFAN7620023575,levp,Kirk Cousins,1,false
+2023,97,9,,IanP123,Iyano1911,Steelers D/ST,1,false
+2023,98,9,,ESPNFAN7620023575,levp,Gabe Davis,2,false
+2023,99,9,,Zach82460,zach_montoya,Dak Prescott,1,false
+2023,100,9,,KillerMiller8,SimonMiller,Javonte Williams,7,false
+2023,101,9,,Growney11,Ryan505,49ers D/ST,1,false
+2023,102,9,,ESPNFAN4373227268,Chance145,George Pickens,3,false
+2023,103,9,,IanP123,Iyano1911,Jaxon Smith-Njigba,2,false
+2023,104,9,,maxdawkins,madmax101010,Zach Charbonnet,1,false
+2023,105,9,,ESPNFAN4373227268,Chance145,Brian Robinson Jr.,3,false
+2023,106,9,,Gerk11,JGERK,JuJu Smith-Schuster,1,false
+2023,107,9,,ESPNFAN7620023575,levp,Samaje Perine,2,false
+2023,108,9,,ESPNFAN7620023575,levp,Bills D/ST,1,false
+2023,109,10,,KillerMiller8,SimonMiller,Kadarius Toney,3,false
+2023,110,10,,KillerMiller8,SimonMiller,Rashod Bateman,3,false
+2023,111,10,,Zach82460,zach_montoya,Justin Tucker,1,false
+2023,112,10,,Zach82460,zach_montoya,Elijah Mitchell,3,false
+2023,113,10,,Growney11,Ryan505,Jamaal Williams,3,false
+2023,114,10,,ESPNFAN7620023575,levp,Courtland Sutton,2,false
+2023,115,10,,Michael Oxmall,Brotesk,David Njoku,1,false
+2023,116,10,,maxdawkins,madmax101010,Anthony Richardson,1,false
+2023,117,10,,ESPNFAN4373227268,Chance145,Daniel Jones,1,false
+2023,118,10,,Gerk11,JGERK,Matthew Stafford,1,false
+2023,119,10,,Zach82460,zach_montoya,Jeff Wilson Jr.,2,false
+2023,120,10,,Zach82460,zach_montoya,Rondale Moore,2,false
+2023,121,11,,IanP123,Iyano1911,Darnell Mooney,1,false
+2023,122,11,,Zach82460,zach_montoya,Rashaad Penny,3,false
+2023,123,11,,Zach82460,zach_montoya,Dolphins D/ST,1,false
+2023,124,11,,ESPNFAN4373227268,Chance145,DJ Chark Jr.,2,false
+2023,125,11,,Zach82460,zach_montoya,Zay Flowers,2,false
+2023,126,11,,ESPNFAN1932809868,Joles,Gus Edwards,1,false
+2023,127,11,,Michael Oxmall,Brotesk,Jordan Addison,1,false
+2023,128,11,,maxdawkins,madmax101010,Quentin Johnston,1,false
+2023,129,11,,Growney11,Ryan505,Jerick McKinnon,2,false
+2023,130,11,,Gerk11,JGERK,Tua Tagovailoa,1,false
+2023,131,11,,metsfan21,ajg21,Devin Singletary,1,false
+2023,132,11,,ESPNFAN7620023575,levp,Nico Collins,1,false
+2023,133,12,,IanP123,Iyano1911,Aaron Rodgers,1,false
+2023,134,12,,maxdawkins,madmax101010,Tyler Allgeier,2,false
+2023,135,12,,Gerk11,JGERK,Allen Lazard,2,false
+2023,136,12,,ESPNFAN8773629562,BurrowingMule,Joshua Kelley,2,false
+2023,137,12,,Growney11,Ryan505,Damien Harris,1,false
+2023,138,12,,ESPNFAN1932809868,Joles,Chuba Hubbard,1,false
+2023,139,12,,Michael Oxmall,Brotesk,Dalton Schultz,1,false
+2023,140,12,,maxdawkins,madmax101010,Evan McPherson,1,false
+2023,141,12,,ESPNFAN4373227268,Chance145,Ezekiel Elliott,1,false
+2023,142,12,,Gerk11,JGERK,Kyler Murray,1,false
+2023,143,12,,metsfan21,ajg21,Packers D/ST,1,false
+2023,144,12,,ESPNFAN7620023575,levp,Greg Dulcich,1,false
+2023,145,13,,IanP123,Iyano1911,Raheem Mostert,1,false
+2023,146,13,,KillerMiller8,SimonMiller,Russell Wilson,1,false
+2023,147,13,,Zach82460,zach_montoya,Michael Gallup,1,false
+2023,148,13,,ESPNFAN8773629562,BurrowingMule,Jaylen Warren,1,false
+2023,149,13,,Growney11,Ryan505,Zay Jones,1,false
+2023,150,13,,ESPNFAN1932809868,Joles,Skyy Moore,1,false
+2023,151,13,,Michael Oxmall,Brotesk,Cole Kmet,1,false
+2023,152,13,,maxdawkins,madmax101010,Saints D/ST,1,false
+2023,153,13,,ESPNFAN4373227268,Chance145,D'Onta Foreman,1,false
+2023,154,13,,Gerk11,JGERK,Zach Ertz,1,false
+2023,155,13,,metsfan21,ajg21,Geno Smith,1,false
+2023,156,13,,ESPNFAN7620023575,levp,Bryce Young,1,false
+2023,157,14,,IanP123,Iyano1911,Michael Carter,1,false
+2023,158,14,,KillerMiller8,SimonMiller,De'Von Achane,1,false
+2023,159,14,,Zach82460,zach_montoya,Adam Thielen,1,false
+2023,160,14,,ESPNFAN8773629562,BurrowingMule,Tyler Bass,1,false
+2023,161,14,,Growney11,Ryan505,Tyler Boyd,1,false
+2023,162,14,,ESPNFAN1932809868,Joles,Luke Musgrave,1,false
+2023,163,14,,Michael Oxmall,Brotesk,Jets D/ST,1,false
+2023,164,14,,ESPNFAN4373227268,Chance145,Harrison Butker,1,false
+2023,165,14,,Gerk11,JGERK,Patriots D/ST,1,false
+2023,166,14,,metsfan21,ajg21,Cairo Santos,1,false
+2023,167,14,,ESPNFAN7620023575,levp,Daniel Carlson,1,false
+2023,168,14,,IanP123,Iyano1911,Younghoe Koo,1,false
+2023,169,15,,KillerMiller8,SimonMiller,Tank Bigsby,1,false
+2023,170,15,,ESPNFAN8773629562,BurrowingMule,Broncos D/ST,1,false
+2023,171,15,,Growney11,Ryan505,Clyde Edwards-Helaire,1,false
+2023,172,15,,ESPNFAN1932809868,Joles,Eagles D/ST,1,false
+2023,173,15,,Michael Oxmall,Brotesk,Tyquan Thornton,1,false
+2023,174,15,,ESPNFAN4373227268,Chance145,K.J. Osborn,1,false
+2023,175,15,,Gerk11,JGERK,Matt Prater,1,false
+2023,176,15,,metsfan21,ajg21,Elijah Moore,1,false
+2023,177,15,,ESPNFAN7620023575,levp,Chase Claypool,1,false
+2023,178,15,,KillerMiller8,SimonMiller,Brandon McManus,1,false
+2023,179,15,,Growney11,Ryan505,Greg Zuerlein,1,false
+2023,180,15,,ESPNFAN1932809868,Joles,Jason Sanders,1,false
+2023,181,16,,Michael Oxmall,Brotesk,Graham Gano,1,false
+2023,182,16,,ESPNFAN4373227268,Chance145,Bengals D/ST,1,false
+2023,183,16,,metsfan21,ajg21,Juwan Johnson,1,false
+2023,184,16,,ESPNFAN7620023575,levp,Gerald Everett,1,false
+2023,185,16,,Michael Oxmall,Brotesk,Roschon Johnson,1,false
+2023,186,16,,metsfan21,ajg21,Jason Myers,1,false
+2023,187,16,,Michael Oxmall,Brotesk,Matt Gay,1,false
+2023,188,16,,metsfan21,ajg21,Eddy Pineiro,1,false
+2023,189,16,,Michael Oxmall,Brotesk,Jonathan Mingo,1,false
+2023,190,16,,metsfan21,ajg21,Jayden Reed,1,false
+2023,191,16,,Michael Oxmall,Brotesk,Robert Woods,1,false
+2023,192,16,,Michael Oxmall,Brotesk,Rashee Rice,1,false
+2024,1,1,,maxdawkins,madmax101010,Jonathan Taylor,56,false
+2024,2,1,,KillerMiller8,SimonMiller,Amon-Ra St. Brown,58,false
+2024,3,1,,metsfan21,ajg21,Christian McCaffrey,75,false
+2024,4,1,,Growney11,Ryan505,Saquon Barkley,53,false
+2024,5,1,,metsfan21,ajg21,Brandon Aubrey,4,false
+2024,6,1,,Zach82460,zach_montoya,CeeDee Lamb,65,false
+2024,7,1,,Michael Oxmall,Brotesk,Tyreek Hill,65,false
+2024,8,1,,IanP123,Iyano1911,Justin Jefferson,56,false
+2024,9,1,,ESPNFAN4373227268,Chance145,Breece Hall,63,false
+2024,10,1,,Gerk11,JGERK,Marvin Harrison Jr.,47,false
+2024,11,1,,maxdawkins,madmax101010,Bijan Robinson,61,false
+2024,12,1,,ESPNFAN7620023575,levp,Garrett Wilson,53,false
+2024,13,2,,Growney11,Ryan505,A.J. Brown,51,false
+2024,14,2,,ESPNFAN7620023575,levp,DK Metcalf,33,false
+2024,15,2,,Michael Oxmall,Brotesk,Travis Kelce,26,false
+2024,16,2,,Zach82460,zach_montoya,Drake London,36,false
+2024,17,2,,ESPNFAN8773629562,BurrowingMule,Ka'imi Fairbairn,1,false
+2024,18,2,,metsfan21,ajg21,Puka Nacua,42,false
+2024,19,2,,Gerk11,JGERK,Kyren Williams,41,false
+2024,20,2,,KillerMiller8,SimonMiller,Derrick Henry,40,false
+2024,21,2,,ESPNFAN4373227268,Chance145,Jahmyr Gibbs,44,false
+2024,22,2,,Michael Oxmall,Brotesk,Cooper Kupp,38,false
+2024,23,2,,IanP123,Iyano1911,Ja'Marr Chase,56,false
+2024,24,2,,ESPNFAN1932809868,Joles,Joe Mixon,28,false
+2024,25,3,,IanP123,Iyano1911,Chris Olave,39,false
+2024,26,3,,ESPNFAN1932809868,Joles,Josh Jacobs,38,false
+2024,27,3,,maxdawkins,madmax101010,C.J. Stroud,11,false
+2024,28,3,,KillerMiller8,SimonMiller,Deebo Samuel Sr.,36,false
+2024,29,3,,ESPNFAN8773629562,BurrowingMule,Browns D/ST,1,false
+2024,30,3,,ESPNFAN8773629562,BurrowingMule,Isiah Pacheco,40,false
+2024,31,3,,Zach82460,zach_montoya,Michael Pittman Jr.,33,false
+2024,32,3,,ESPNFAN8773629562,BurrowingMule,Davante Adams,34,false
+2024,33,3,,ESPNFAN1932809868,Joles,Sam LaPorta,20,false
+2024,34,3,,KillerMiller8,SimonMiller,Aaron Jones,19,false
+2024,35,3,,ESPNFAN7620023575,levp,Travis Etienne Jr.,39,false
+2024,36,3,,ESPNFAN7620023575,levp,James Cook,34,false
+2024,37,4,,ESPNFAN8773629562,BurrowingMule,De'Von Achane,27,false
+2024,38,4,,Gerk11,JGERK,Stefon Diggs,22,false
+2024,39,4,,ESPNFAN1932809868,Joles,Jaylen Warren,8,false
+2024,40,4,,maxdawkins,madmax101010,Malik Nabers,26,false
+2024,41,4,,ESPNFAN4373227268,Chance145,Nico Collins,31,false
+2024,42,4,,Michael Oxmall,Brotesk,Mike Evans,30,false
+2024,43,4,,metsfan21,ajg21,Rachaad White,31,false
+2024,44,4,,KillerMiller8,SimonMiller,DJ Moore,24,false
+2024,45,4,,ESPNFAN4373227268,Chance145,Anthony Richardson,8,false
+2024,46,4,,ESPNFAN1932809868,Joles,Jaylen Waddle,29,false
+2024,47,4,,metsfan21,ajg21,Josh Allen,23,false
+2024,48,4,,Growney11,Ryan505,Alvin Kamara,29,false
+2024,49,5,,ESPNFAN1932809868,Joles,Jalen Hurts,23,false
+2024,50,5,,Michael Oxmall,Brotesk,Patrick Mahomes,13,false
+2024,51,5,,Gerk11,JGERK,James Conner,18,false
+2024,52,5,,ESPNFAN8773629562,BurrowingMule,George Pickens,20,false
+2024,53,5,,Zach82460,zach_montoya,Kenneth Walker III,27,false
+2024,54,5,,ESPNFAN4373227268,Chance145,Brandon Aiyuk,25,false
+2024,55,5,,maxdawkins,madmax101010,DeVonta Smith,19,false
+2024,56,5,,ESPNFAN7620023575,levp,Zay Flowers,22,false
+2024,57,5,,Growney11,Ryan505,Lamar Jackson,11,false
+2024,58,5,,metsfan21,ajg21,Devin Singletary,7,false
+2024,59,5,,ESPNFAN8773629562,BurrowingMule,Mark Andrews,14,false
+2024,60,5,,ESPNFAN1932809868,Joles,Tee Higgins,16,false
+2024,61,6,,Zach82460,zach_montoya,Justin Tucker,2,false
+2024,62,6,,maxdawkins,madmax101010,Calvin Ridley,13,false
+2024,63,6,,Growney11,Ryan505,Austin Ekeler,6,false
+2024,64,6,,maxdawkins,madmax101010,49ers D/ST,1,false
+2024,65,6,,ESPNFAN1932809868,Joles,Rhamondre Stevenson,10,false
+2024,66,6,,ESPNFAN1932809868,Joles,Tank Dell,10,false
+2024,67,6,,Growney11,Ryan505,Cowboys D/ST,2,false
+2024,68,6,,ESPNFAN1932809868,Joles,Packers D/ST,3,false
+2024,69,6,,Gerk11,JGERK,Trey McBride,17,false
+2024,70,6,,Growney11,Ryan505,Ezekiel Elliott,6,false
+2024,71,6,,Gerk11,JGERK,David Montgomery,10,false
+2024,72,6,,Gerk11,JGERK,D'Andre Swift,17,false
+2024,73,7,,KillerMiller8,SimonMiller,Kyle Pitts,11,false
+2024,74,7,,IanP123,Iyano1911,Evan Engram,7,false
+2024,75,7,,Michael Oxmall,Brotesk,Javonte Williams,6,false
+2024,76,7,,Michael Oxmall,Brotesk,Jake Elliott,2,false
+2024,77,7,,Growney11,Ryan505,Chris Godwin,9,false
+2024,78,7,,ESPNFAN4373227268,Chance145,Dalton Kincaid,7,false
+2024,79,7,,KillerMiller8,SimonMiller,Ravens D/ST,1,false
+2024,80,7,,ESPNFAN1932809868,Joles,Younghoe Koo,1,false
+2024,81,7,,IanP123,Iyano1911,Joe Burrow,10,false
+2024,82,7,,ESPNFAN7620023575,levp,Nick Chubb,3,false
+2024,83,7,,metsfan21,ajg21,Jayden Reed,7,false
+2024,84,7,,Growney11,Ryan505,Keenan Allen,5,false
+2024,85,8,,ESPNFAN8773629562,BurrowingMule,Amari Cooper,12,false
+2024,86,8,,Zach82460,zach_montoya,Najee Harris,9,false
+2024,87,8,,ESPNFAN4373227268,Chance145,Terry McLaurin,6,false
+2024,88,8,,Zach82460,zach_montoya,Jerome Ford,2,false
+2024,89,8,,ESPNFAN8773629562,BurrowingMule,Dak Prescott,7,false
+2024,90,8,,Growney11,Ryan505,George Kittle,6,false
+2024,91,8,,KillerMiller8,SimonMiller,Tyler Bass,1,false
+2024,92,8,,IanP123,Iyano1911,Zamir White,6,false
+2024,93,8,,metsfan21,ajg21,Jake Ferguson,2,false
+2024,94,8,,Zach82460,zach_montoya,Tony Pollard,3,false
+2024,95,8,,ESPNFAN8773629562,BurrowingMule,Rashee Rice,10,false
+2024,96,8,,IanP123,Iyano1911,Diontae Johnson,5,false
+2024,97,9,,Growney11,Ryan505,Christian Kirk,9,false
+2024,98,9,,ESPNFAN7620023575,levp,Courtland Sutton,4,false
+2024,99,9,,Michael Oxmall,Brotesk,Rico Dowdle,3,false
+2024,100,9,,Michael Oxmall,Brotesk,Gus Edwards,6,false
+2024,101,9,,ESPNFAN4373227268,Chance145,Brian Robinson Jr.,6,false
+2024,102,9,,ESPNFAN8773629562,BurrowingMule,Kyler Murray,16,false
+2024,103,9,,Gerk11,JGERK,Christian Watson,10,false
+2024,104,9,,IanP123,Iyano1911,Raheem Mostert,9,false
+2024,105,9,,ESPNFAN7620023575,levp,Kirk Cousins,3,false
+2024,106,9,,Growney11,Ryan505,Brock Purdy,2,false
+2024,107,9,,ESPNFAN1932809868,Joles,DeAndre Hopkins,2,false
+2024,108,9,,ESPNFAN8773629562,BurrowingMule,Jonathon Brooks,2,false
+2024,109,10,,IanP123,Iyano1911,Tyjae Spears,2,false
+2024,110,10,,ESPNFAN1932809868,Joles,Jaxon Smith-Njigba,3,false
+2024,111,10,,Michael Oxmall,Brotesk,Zack Moss,4,false
+2024,112,10,,metsfan21,ajg21,Keon Coleman,2,false
+2024,113,10,,Gerk11,JGERK,Blake Corum,2,false
+2024,114,10,,Gerk11,JGERK,Jordan Love,8,false
+2024,115,10,,Growney11,Ryan505,Ladd McConkey,2,false
+2024,116,10,,ESPNFAN1932809868,Joles,Jordan Addison,3,false
+2024,117,10,,ESPNFAN7620023575,levp,Pat Freiermuth,1,false
+2024,118,10,,Zach82460,zach_montoya,David Njoku,3,false
+2024,119,10,,ESPNFAN4373227268,Chance145,Rome Odunze,3,false
+2024,120,10,,IanP123,Iyano1911,Jameson Williams,3,false
+2024,121,11,,ESPNFAN4373227268,Chance145,Jake Moody,1,false
+2024,122,11,,metsfan21,ajg21,Jerry Jeudy,1,false
+2024,123,11,,Growney11,Ryan505,Chase Brown,6,false
+2024,124,11,,Zach82460,zach_montoya,J.K. Dobbins,3,false
+2024,125,11,,ESPNFAN8773629562,BurrowingMule,Xavier Worthy,4,false
+2024,126,11,,Zach82460,zach_montoya,Tyler Lockett,2,false
+2024,127,11,,maxdawkins,madmax101010,Tyler Allgeier,2,false
+2024,128,11,,Zach82460,zach_montoya,Hollywood Brown,3,false
+2024,129,11,,ESPNFAN7620023575,levp,Evan McPherson,1,false
+2024,130,11,,maxdawkins,madmax101010,Brian Thomas Jr.,2,false
+2024,131,11,,Growney11,Ryan505,Greg Zuerlein,1,false
+2024,132,11,,IanP123,Iyano1911,Kendre Miller,1,false
+2024,133,12,,KillerMiller8,SimonMiller,Joshua Palmer,3,false
+2024,134,12,,metsfan21,ajg21,Jaleel McLaughlin,1,false
+2024,135,12,,Michael Oxmall,Brotesk,Ty Chandler,1,false
+2024,136,12,,maxdawkins,madmax101010,Brock Bowers,3,false
+2024,137,12,,ESPNFAN8773629562,BurrowingMule,Trey Benson,3,false
+2024,138,12,,Zach82460,zach_montoya,Mike Williams,3,false
+2024,139,12,,KillerMiller8,SimonMiller,Zach Charbonnet,1,false
+2024,140,12,,ESPNFAN1932809868,Joles,Jayden Daniels,1,false
+2024,141,12,,ESPNFAN7620023575,levp,Jets D/ST,1,false
+2024,142,12,,Zach82460,zach_montoya,Steelers D/ST,1,false
+2024,143,12,,Zach82460,zach_montoya,Dallas Goedert,2,false
+2024,144,12,,ESPNFAN8773629562,BurrowingMule,T.J. Hockenson,2,false
+2024,145,13,,ESPNFAN4373227268,Chance145,Elijah Mitchell,1,false
+2024,146,13,,metsfan21,ajg21,Tim Patrick,1,false
+2024,147,13,,Michael Oxmall,Brotesk,Rashid Shaheed,1,false
+2024,148,13,,Gerk11,JGERK,Darnell Mooney,3,false
+2024,149,13,,ESPNFAN8773629562,BurrowingMule,Chuba Hubbard,5,false
+2024,150,13,,Growney11,Ryan505,Jakobi Meyers,2,false
+2024,151,13,,KillerMiller8,SimonMiller,Trevor Lawrence,1,false
+2024,152,13,,ESPNFAN1932809868,Joles,Aaron Rodgers,1,false
+2024,153,13,,ESPNFAN7620023575,levp,Curtis Samuel,1,false
+2024,154,13,,Zach82460,zach_montoya,Deshaun Watson,1,false
+2024,155,13,,IanP123,Iyano1911,MarShawn Lloyd,1,false
+2024,156,13,,ESPNFAN4373227268,Chance145,Romeo Doubs,1,false
+2024,157,14,,metsfan21,ajg21,Samaje Perine,1,false
+2024,158,14,,Michael Oxmall,Brotesk,Khalil Shakir,1,false
+2024,159,14,,maxdawkins,madmax101010,Tyrone Tracy Jr.,1,false
+2024,160,14,,Gerk11,JGERK,Antonio Gibson,1,false
+2024,161,14,,KillerMiller8,SimonMiller,Braelon Allen,1,false
+2024,162,14,,ESPNFAN7620023575,levp,Adonai Mitchell,1,false
+2024,163,14,,IanP123,Iyano1911,Alexander Mattison,1,false
+2024,164,14,,ESPNFAN4373227268,Chance145,Justin Herbert,1,false
+2024,165,14,,metsfan21,ajg21,Lions D/ST,1,false
+2024,166,14,,Michael Oxmall,Brotesk,Dalton Schultz,1,false
+2024,167,14,,maxdawkins,madmax101010,Xavier Legette,1,false
+2024,168,14,,ESPNFAN7620023575,levp,Caleb Williams,2,false
+2024,169,15,,KillerMiller8,SimonMiller,Dameon Pierce,1,false
+2024,170,15,,ESPNFAN7620023575,levp,Khalil Herbert,1,false
+2024,171,15,,IanP123,Iyano1911,Adam Thielen,1,false
+2024,172,15,,ESPNFAN4373227268,Chance145,Jaylen Wright,1,false
+2024,173,15,,metsfan21,ajg21,Marvin Mims Jr.,1,false
+2024,174,15,,Michael Oxmall,Brotesk,Chiefs D/ST,1,false
+2024,175,15,,maxdawkins,madmax101010,Dontayvion Wicks,1,false
+2024,176,15,,Gerk11,JGERK,Saints D/ST,1,false
+2024,177,15,,KillerMiller8,SimonMiller,Michael Wilson,1,false
+2024,178,15,,ESPNFAN7620023575,levp,Brandin Cooks,1,false
+2024,179,15,,IanP123,Iyano1911,Dolphins D/ST,1,false
+2024,180,15,,ESPNFAN4373227268,Chance145,DeMario Douglas,1,false
+2024,181,16,,Michael Oxmall,Brotesk,Cole Kmet,2,false
+2024,182,16,,maxdawkins,madmax101010,Kimani Vidal,1,false
+2024,183,16,,Gerk11,JGERK,Taysom Hill,1,false
+2024,184,16,,KillerMiller8,SimonMiller,Gabe Davis,1,false
+2024,185,16,,IanP123,Iyano1911,Harrison Butker,1,false
+2024,186,16,,ESPNFAN4373227268,Chance145,Chargers D/ST,1,false
+2024,187,16,,metsfan21,ajg21,Tyler Conklin,1,false
+2024,188,16,,maxdawkins,madmax101010,DJ Chark Jr.,1,false
+2024,189,16,,Gerk11,JGERK,AJ Dillon,1,false
+2024,190,16,,KillerMiller8,SimonMiller,Tua Tagovailoa,1,false
+2024,191,16,,maxdawkins,madmax101010,Cameron Dicker,1,false
+2024,192,16,,Gerk11,JGERK,Matt Prater,1,false
+2025,1,1,,Growney11,Ryan505,Lamar Jackson,18,true
+2025,2,1,,Gerk11,JGERK,Trey McBride,24,true
+2025,3,1,,KillerMiller8,SimonMiller,Ladd McConkey,9,true
+2025,4,1,,ESPNFAN8773629562,BurrowingMule,De'Von Achane,34,true
+2025,5,1,,ESPNFAN7620023575,levp,Courtland Sutton,11,true
+2025,6,1,,metsfan21,ajg21,Bucky Irving,8,true
+2025,7,1,,maxdawkins,madmax101010,Brock Bowers,10,true
+2025,8,1,,Michael Oxmall,Brotesk,Chuba Hubbard,12,true
+2025,9,1,,ESPNFAN4373227268,Chance145,Jahmyr Gibbs,51,true
+2025,10,1,,ESPNFAN1932809868,Joles,Brian Thomas Jr.,9,true
+2025,11,1,,Zach82460,zach_montoya,Drake London,43,true
+2025,12,1,,IanP123,Iyano1911,Ja'Marr Chase,63,true
+2025,13,2,,Gerk11,JGERK,Bijan Robinson,71,false
+2025,14,2,,metsfan21,ajg21,Justin Jefferson,65,false
+2025,15,2,,ESPNFAN8773629562,BurrowingMule,Brandon Aubrey,1,false
+2025,16,2,,Zach82460,zach_montoya,Tyreek Hill,40,false
+2025,17,2,,ESPNFAN7620023575,levp,Saquon Barkley,71,false
+2025,18,2,,ESPNFAN8773629562,BurrowingMule,A.J. Brown,46,false
+2025,19,2,,ESPNFAN8773629562,BurrowingMule,Malik Nabers,55,false
+2025,20,2,,maxdawkins,madmax101010,Christian McCaffrey,60,false
+2025,21,2,,Zach82460,zach_montoya,Kyren Williams,36,false
+2025,22,2,,Growney11,Ryan505,CeeDee Lamb,63,false
+2025,23,2,,Gerk11,JGERK,Ashton Jeanty,55,false
+2025,24,2,,IanP123,Iyano1911,Puka Nacua,51,false
+2025,25,3,,KillerMiller8,SimonMiller,Derrick Henry,42,false
+2025,26,3,,metsfan21,ajg21,Jonathan Taylor,43,false
+2025,27,3,,ESPNFAN1932809868,Joles,Eagles D/ST,2,false
+2025,28,3,,maxdawkins,madmax101010,Amon-Ra St. Brown,50,false
+2025,29,3,,ESPNFAN4373227268,Chance145,Josh Allen,33,false
+2025,30,3,,ESPNFAN7620023575,levp,Nico Collins,58,false
+2025,31,3,,Growney11,Ryan505,Tee Higgins,36,false
+2025,32,3,,ESPNFAN4373227268,Chance145,Davante Adams,31,false
+2025,33,3,,maxdawkins,madmax101010,Garrett Wilson,23,false
+2025,34,3,,Michael Oxmall,Brotesk,Jalen Hurts,30,false
+2025,35,3,,Zach82460,zach_montoya,James Cook III,26,false
+2025,36,3,,KillerMiller8,SimonMiller,Jayden Daniels,23,false
+2025,37,4,,KillerMiller8,SimonMiller,Josh Jacobs,44,false
+2025,38,4,,IanP123,Iyano1911,Terry McLaurin,24,false
+2025,39,4,,ESPNFAN8773629562,BurrowingMule,49ers D/ST,1,false
+2025,40,4,,ESPNFAN1932809868,Joles,Joe Mixon,15,false
+2025,41,4,,ESPNFAN8773629562,BurrowingMule,Joe Burrow,14,false
+2025,42,4,,ESPNFAN1932809868,Joles,Alvin Kamara,31,false
+2025,43,4,,Michael Oxmall,Brotesk,Breece Hall,29,false
+2025,44,4,,ESPNFAN7620023575,levp,Marvin Harrison Jr.,21,false
+2025,45,4,,IanP123,Iyano1911,Texans D/ST,1,false
+2025,46,4,,Michael Oxmall,Brotesk,Zay Flowers,15,false
+2025,47,4,,KillerMiller8,SimonMiller,DK Metcalf,20,false
+2025,48,4,,Gerk11,JGERK,Rashee Rice,10,false
+2025,49,5,,ESPNFAN4373227268,Chance145,Jaxon Smith-Njigba,27,false
+2025,50,5,,Growney11,Ryan505,Chase Brown,31,false
+2025,51,5,,ESPNFAN1932809868,Joles,George Kittle,30,false
+2025,52,5,,Michael Oxmall,Brotesk,Kareem Hunt,1,false
+2025,53,5,,Michael Oxmall,Brotesk,Patrick Mahomes,6,false
+2025,54,5,,IanP123,Iyano1911,Omarion Hampton,27,false
+2025,55,5,,metsfan21,ajg21,Broncos D/ST,3,false
+2025,56,5,,Zach82460,zach_montoya,Sam LaPorta,10,false
+2025,57,5,,IanP123,Iyano1911,Cameron Dicker,1,false
+2025,58,5,,KillerMiller8,SimonMiller,Kenneth Walker III,32,false
+2025,59,5,,maxdawkins,madmax101010,Vikings D/ST,1,false
+2025,60,5,,ESPNFAN4373227268,Chance145,Xavier Worthy,12,false
+2025,61,6,,ESPNFAN1932809868,Joles,James Conner,29,false
+2025,62,6,,Michael Oxmall,Brotesk,Steelers D/ST,2,false
+2025,63,6,,Zach82460,zach_montoya,Isiah Pacheco,8,false
+2025,64,6,,Michael Oxmall,Brotesk,Mike Evans,30,false
+2025,65,6,,maxdawkins,madmax101010,Bo Nix,10,false
+2025,66,6,,ESPNFAN7620023575,levp,D'Andre Swift,21,false
+2025,67,6,,metsfan21,ajg21,Jerry Jeudy,8,false
+2025,68,6,,ESPNFAN1932809868,Joles,Tetairoa McMillan,12,false
+2025,69,6,,Michael Oxmall,Brotesk,DeVonta Smith,17,false
+2025,70,6,,Zach82460,zach_montoya,Elijah Moore,1,false
+2025,71,6,,metsfan21,ajg21,RJ Harvey,15,false
+2025,72,6,,Growney11,Ryan505,Ravens D/ST,1,false
+2025,73,7,,metsfan21,ajg21,J.K. Dobbins,5,false
+2025,74,7,,ESPNFAN4373227268,Chance145,Bills D/ST,1,false
+2025,75,7,,Growney11,Ryan505,DJ Moore,21,false
+2025,76,7,,Michael Oxmall,Brotesk,T.J. Hockenson,8,false
+2025,77,7,,ESPNFAN1932809868,Joles,Baker Mayfield,3,false
+2025,78,7,,KillerMiller8,SimonMiller,Calvin Ridley,11,false
+2025,79,7,,KillerMiller8,SimonMiller,Patriots D/ST,1,false
+2025,80,7,,metsfan21,ajg21,Travis Hunter,8,false
+2025,81,7,,ESPNFAN1932809868,Joles,Jaylen Waddle,12,false
+2025,82,7,,Zach82460,zach_montoya,Jared Goff,7,false
+2025,83,7,,maxdawkins,madmax101010,Jameson Williams,15,false
+2025,84,7,,Michael Oxmall,Brotesk,Aaron Jones Sr.,14,false
+2025,85,8,,ESPNFAN4373227268,Chance145,Rome Odunze,12,false
+2025,86,8,,ESPNFAN4373227268,Chance145,TreVeyon Henderson,9,false
+2025,87,8,,metsfan21,ajg21,George Pickens,13,false
+2025,88,8,,Michael Oxmall,Brotesk,Chris Olave,5,false
+2025,89,8,,IanP123,Iyano1911,Travis Kelce,6,false
+2025,90,8,,Growney11,Ryan505,David Njoku,4,false
+2025,91,8,,KillerMiller8,SimonMiller,Chris Boswell,1,false
+2025,92,8,,Michael Oxmall,Brotesk,Cooper Kupp,10,false
+2025,93,8,,IanP123,Iyano1911,Kaleb Johnson,11,false
+2025,94,8,,ESPNFAN1932809868,Joles,David Montgomery,13,false
+2025,95,8,,ESPNFAN1932809868,Joles,Tony Pollard,15,false
+2025,96,8,,ESPNFAN1932809868,Joles,Chris Godwin Jr.,8,false
+2025,97,9,,metsfan21,ajg21,Mark Andrews,3,false
+2025,98,9,,ESPNFAN4373227268,Chance145,Evan Engram,5,false
+2025,99,9,,ESPNFAN7620023575,levp,Jakobi Meyers,5,false
+2025,100,9,,Gerk11,JGERK,Stefon Diggs,15,false
+2025,101,9,,Gerk11,JGERK,Matthew Golden,6,false
+2025,102,9,,ESPNFAN7620023575,levp,Jake Ferguson,1,false
+2025,103,9,,Growney11,Ryan505,Javonte Williams,6,false
+2025,104,9,,ESPNFAN1932809868,Joles,Jayden Reed,3,false
+2025,105,9,,Zach82460,zach_montoya,Jaylen Warren,6,false
+2025,106,9,,Michael Oxmall,Brotesk,Jordan Addison,3,false
+2025,107,9,,Michael Oxmall,Brotesk,Brian Robinson Jr.,8,false
+2025,108,9,,ESPNFAN4373227268,Chance145,Tyrone Tracy Jr.,6,false
+2025,109,10,,metsfan21,ajg21,Justin Herbert,1,false
+2025,110,10,,Michael Oxmall,Brotesk,Jake Bates,2,false
+2025,111,10,,Gerk11,JGERK,Kyler Murray,4,false
+2025,112,10,,ESPNFAN4373227268,Chance145,Rhamondre Stevenson,6,false
+2025,113,10,,maxdawkins,madmax101010,Austin Ekeler,4,false
+2025,114,10,,ESPNFAN8773629562,BurrowingMule,Travis Etienne Jr.,7,false
+2025,115,10,,ESPNFAN8773629562,BurrowingMule,Ricky Pearsall,11,false
+2025,116,10,,IanP123,Iyano1911,Dak Prescott,1,false
+2025,117,10,,Zach82460,zach_montoya,Cowboys D/ST,1,false
+2025,118,10,,maxdawkins,madmax101010,Brock Purdy,1,false
+2025,119,10,,Growney11,Ryan505,Tank Bigsby,3,false
+2025,120,10,,KillerMiller8,SimonMiller,Deebo Samuel,9,false
+2025,121,11,,Growney11,Ryan505,Cam Skattebo,7,false
+2025,122,11,,ESPNFAN8773629562,BurrowingMule,Quinshon Judkins,4,false
+2025,123,11,,Gerk11,JGERK,Seahawks D/ST,1,false
+2025,124,11,,metsfan21,ajg21,Rachaad White,11,false
+2025,125,11,,ESPNFAN8773629562,BurrowingMule,Zach Charbonnet,5,false
+2025,126,11,,ESPNFAN1932809868,Joles,Ka'imi Fairbairn,1,false
+2025,127,11,,maxdawkins,madmax101010,Colston Loveland,2,false
+2025,128,11,,Zach82460,zach_montoya,Jason Sanders,1,false
+2025,129,11,,ESPNFAN1932809868,Joles,Jerome Ford,13,false
+2025,130,11,,Growney11,Ryan505,Chase McLaughlin,1,false
+2025,131,11,,metsfan21,ajg21,Tucker Kraft,1,false
+2025,132,11,,ESPNFAN4373227268,Chance145,Jake Elliott,1,false
+2025,133,12,,ESPNFAN8773629562,BurrowingMule,Kyle Pitts Sr.,3,false
+2025,134,12,,Gerk11,JGERK,Khalil Shakir,3,false
+2025,135,12,,maxdawkins,madmax101010,Jordan Mason,11,false
+2025,136,12,,KillerMiller8,SimonMiller,Michael Pittman Jr.,3,false
+2025,137,12,,ESPNFAN1932809868,Joles,Emeka Egbuka,3,false
+2025,138,12,,IanP123,Iyano1911,Najee Harris,4,false
+2025,139,12,,Growney11,Ryan505,Zamir White,3,false
+2025,140,12,,maxdawkins,madmax101010,Bhayshul Tuten,1,false
+2025,141,12,,ESPNFAN8773629562,BurrowingMule,Jauan Jennings,4,false
+2025,142,12,,Zach82460,zach_montoya,Caleb Williams,2,false
+2025,143,12,,ESPNFAN4373227268,Chance145,Tyjae Spears,3,false
+2025,144,12,,ESPNFAN7620023575,levp,Trey Benson,3,false
+2025,145,13,,metsfan21,ajg21,Tyler Bass,2,false
+2025,146,13,,Growney11,Ryan505,Justin Fields,2,false
+2025,147,13,,ESPNFAN8773629562,BurrowingMule,Isaac Guerendo,7,false
+2025,148,13,,IanP123,Iyano1911,Braelon Allen,3,false
+2025,149,13,,Zach82460,zach_montoya,Roschon Johnson,3,false
+2025,150,13,,maxdawkins,madmax101010,Josh Downs,1,false
+2025,151,13,,metsfan21,ajg21,Rashid Shaheed,2,false
+2025,152,13,,metsfan21,ajg21,Keon Coleman,7,false
+2025,153,13,,Zach82460,zach_montoya,Jayden Higgins,5,false
+2025,154,13,,Growney11,Ryan505,Jaylen Wright,2,false
+2025,155,13,,maxdawkins,madmax101010,Darnell Mooney,2,false
+2025,156,13,,ESPNFAN7620023575,levp,C.J. Stroud,1,false
+2025,157,14,,Zach82460,zach_montoya,Tyler Allgeier,6,false
+2025,158,14,,IanP123,Iyano1911,Jaydon Blue,4,false
+2025,159,14,,Zach82460,zach_montoya,Romeo Doubs,1,false
+2025,160,14,,maxdawkins,madmax101010,Hollywood Brown,3,false
+2025,161,14,,Growney11,Ryan505,Tre' Harris,1,false
+2025,162,14,,ESPNFAN8773629562,BurrowingMule,Brandon Aiyuk,3,false
+2025,163,14,,ESPNFAN8773629562,BurrowingMule,Will Shipley,1,false
+2025,164,14,,Gerk11,JGERK,Jordan Love,1,false
+2025,165,14,,ESPNFAN7620023575,levp,Lions D/ST,1,false
+2025,166,14,,ESPNFAN7620023575,levp,Ray Davis,2,false
+2025,167,14,,Gerk11,JGERK,Jack Bech,2,false
+2025,168,14,,maxdawkins,madmax101010,Harrison Butker,1,false
+2025,169,15,,Growney11,Ryan505,Adam Thielen,1,false
+2025,170,15,,ESPNFAN4373227268,Chance145,Marvin Mims Jr.,1,false
+2025,171,15,,ESPNFAN8773629562,BurrowingMule,J.J. McCarthy,1,false
+2025,172,15,,Gerk11,JGERK,Xavier Legette,1,false
+2025,173,15,,ESPNFAN7620023575,levp,Cedric Tillman,1,false
+2025,174,15,,KillerMiller8,SimonMiller,Tyler Warren,1,false
+2025,175,15,,IanP123,Iyano1911,Dallas Goedert,1,false
+2025,176,15,,ESPNFAN4373227268,Chance145,Tua Tagovailoa,1,false
+2025,177,15,,Gerk11,JGERK,Tyler Loop,1,false
+2025,178,15,,ESPNFAN7620023575,levp,Wil Lutz,1,false
+2025,179,15,,KillerMiller8,SimonMiller,Dalton Kincaid,1,false
+2025,180,15,,Gerk11,JGERK,Nick Chubb,2,false
+2025,181,16,,Gerk11,JGERK,Darren Waller,2,false
+2025,182,16,,Gerk11,JGERK,Drake Maye,1,false
+2025,183,16,,ESPNFAN7620023575,levp,Hunter Henry,1,false
+2025,184,16,,KillerMiller8,SimonMiller,Luther Burden III,1,false
+2025,185,16,,IanP123,Iyano1911,Justice Hill,1,false
+2025,186,16,,ESPNFAN4373227268,Chance145,Jonnu Smith,1,false
+2025,187,16,,ESPNFAN7620023575,levp,Quentin Johnston,1,false
+2025,188,16,,KillerMiller8,SimonMiller,Trevor Lawrence,1,false
+2025,189,16,,IanP123,Iyano1911,Tank Dell,1,false
+2025,190,16,,ESPNFAN7620023575,levp,Matthew Stafford,1,false
+2025,191,16,,KillerMiller8,SimonMiller,Keaton Mitchell,1,false
+2025,192,16,,IanP123,Iyano1911,Rashod Bateman,1,false

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gridiron Grind — Draft Day Tool 2026</title>
+<style>
+:root{--bg:#0f1720;--card:#18232f;--line:#2a3a49;--ink:#e8eef4;--dim:#9fb0c0;--green:#2ecc71;--amber:#f1b04c;--red:#e5573f;--blue:#5aa9e6;--navy:#1F3A5F}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,Segoe UI,Arial}
+h1{font-size:18px;margin:0}h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin:0 0 8px}
+.wrap{max-width:1180px;margin:0 auto;padding:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.dash{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center}
+.stat .v{font-size:26px;font-weight:700}.stat .l{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+input,select,button,textarea{font:inherit;color:var(--ink)}
+input,select,textarea{background:#0c141c;border:1px solid var(--line);border-radius:8px;padding:8px}
+button{cursor:pointer;border:1px solid var(--line);background:#22303d;border-radius:8px;padding:7px 10px}
+button:hover{border-color:var(--blue)}
+button.win{background:#1e5b3a;border-color:#2ecc71}button.gone{background:#3a2320;border-color:#e5573f}
+.verdict{border-radius:10px;padding:12px;margin:10px 0;font-weight:700;text-align:center;font-size:16px}
+.v-go{background:rgba(46,204,113,.15);border:1px solid var(--green);color:#b7f5d1}
+.v-warn{background:rgba(241,176,76,.13);border:1px solid var(--amber);color:#ffe1ad}
+.v-stop{background:rgba(229,87,63,.15);border:1px solid var(--red);color:#ffc4b8}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:5px 7px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;cursor:pointer;position:sticky;top:0;background:var(--card)}
+td.num,th.num{text-align:right}
+.pill{display:inline-block;min-width:30px;text-align:center;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:700}
+.RB{background:#20492f;color:#8ff0b0}.WR{background:#1c3a55;color:#a9d6ff}.QB{background:#4a2330;color:#ffb3c4}.TE{background:#4a3f1c;color:#ffe08a}.K{background:#33404a;color:#cfe0ee}
+.slotrow{display:flex;justify-content:space-between;padding:5px 8px;border-bottom:1px solid var(--line)}
+.slotrow .need{color:var(--amber)}.slotrow .have{color:var(--ink)}
+.tabs button{margin-right:4px;font-size:12px;padding:4px 9px}
+.tabs button.on{background:var(--navy);border-color:var(--blue)}
+.small{font-size:12px;color:var(--dim)}
+.boardwrap{max-height:380px;overflow:auto}
+.kflag{font-size:10px;color:var(--amber)}
+.reco{font-size:12px;color:var(--dim)}
+a.link{color:var(--blue);cursor:pointer}
+.bar{height:16px;background:#0c141c;border:1px solid var(--line);border-radius:6px;overflow:hidden;position:relative}
+.bar>span{display:block;height:100%;background:var(--blue)}
+.bar.over>span{background:var(--red)}.bar.done>span{background:var(--green)}
+.brow{display:grid;grid-template-columns:44px 1fr 92px;gap:8px;align-items:center;margin-bottom:6px;font-size:13px}
+.comp td{font-size:13px}
+.hot{color:var(--red);font-weight:700}.cool{color:var(--green)}
+code{background:#0c141c;border:1px solid var(--line);border-radius:6px;padding:2px 5px;font-size:11px;word-break:break-all;display:block;white-space:pre-wrap;max-height:120px;overflow:auto}
+@media(max-width:900px){.grid,.grid3{grid-template-columns:1fr}.dash{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body><div class="wrap">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+  <h1>🏈 Gridiron Grind — Draft Day Tool</h1>
+  <div class="small">My team <input id="myteam" value="IanP123" style="width:90px"> · Budget $<input id="budget" type="number" value="200" style="width:60px"> · Plan
+    <select id="plan"><option value="A">A · RB-Heavy</option><option value="B">B · Two-Stud</option><option value="C">C · Balanced</option></select>
+    · <a class="link" id="reset">reset</a></div>
+</div>
+
+<div class="dash">
+  <div class="stat"><div class="v" id="remain">–</div><div class="l">$ remaining</div></div>
+  <div class="stat"><div class="v" id="maxnow">–</div><div class="l">max bid now*</div></div>
+  <div class="stat"><div class="v" id="slots">–</div><div class="l">slots filled</div></div>
+  <div class="stat"><div class="v" id="infl">–</div><div class="l">room inflation</div></div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>On the block</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <input id="search" list="dl" placeholder="type a player…" style="flex:1;min-width:160px">
+      <datalist id="dl"></datalist>
+      <span>bid $<input id="bid" type="number" value="1" style="width:64px"></span>
+    </div>
+    <div id="pinfo" class="small" style="margin-top:8px">Pick a player to see the read.</div>
+    <div id="verdict" class="verdict v-go" style="display:none"></div>
+    <div style="display:flex;gap:8px">
+      <button class="win" id="won">✓ I won him</button>
+      <button class="gone" id="lost">✗ Someone else got him</button>
+    </div>
+    <div class="small" style="margin-top:8px">*most you can spend and still afford $1 for every empty roster spot.</div>
+  </div>
+
+  <div class="card">
+    <h2>My roster</h2>
+    <div id="roster"></div>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:12px">
+  <div class="card">
+    <h2>Plan <span id="planName"></span> — budget by position (spent / target)</h2>
+    <div id="bars"></div>
+    <div class="small" id="planNote" style="margin-top:6px"></div>
+  </div>
+  <div class="card">
+    <h2>Positional competition <span class="small" id="compAsOf"></span></h2>
+    <div id="comp"><div class="small">Import the live draft (below) to see who still needs each position and how much cash is chasing it.</div></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>Sync the live ESPN draft (auto-track all 12 teams)</h2>
+  <div class="small">1) On your ESPN league page, run the bookmarklet (copies the whole draft). 2) Paste it here and hit Import — opponent rosters + competition update automatically.</div>
+  <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+    <textarea id="imp" rows="3" placeholder="paste the copied draft JSON here…" style="flex:1;min-width:240px"></textarea>
+    <div style="display:flex;flex-direction:column;gap:6px"><button id="clipImport" style="background:#16a34a">📋 Import from clipboard</button><button id="doImport">Import pasted draft</button><button id="loadDemo" style="background:#444">Load demo draft (practice)</button><span class="small" id="impMsg"></span></div>
+  </div>
+  <details style="margin-top:8px"><summary class="small">Show / install the sync bookmarklet</summary>
+  <div class="small" style="margin:8px 0;line-height:1.7">
+    <b>Easiest — drag this button to your bookmarks bar:</b><br>
+    <a id="bmlink" href="#" draggable="true" style="display:inline-block;margin:6px 0;padding:5px 12px;background:#2f6feb;color:#fff;border-radius:6px;text-decoration:none;font-weight:700">📌 GG Draft Sync</a><br>
+    Then, on your ESPN draft or league tab, click the <b>GG Draft Sync</b> bookmark. It copies the whole draft — come back here and paste into the Import box.<br>
+    <span style="opacity:.75">(If your browser hides the bookmarks bar, press Ctrl+Shift+B to show it first. Alternative: copy the raw code below and paste it into the ESPN tab's console.)</span>
+  </div>
+  <code id="bm" style="display:block;white-space:pre-wrap;word-break:break-all"></code>
+  <script type="text/plain" id="bmsrc">javascript:(async()=>{try{const U=location.href,L=(U.match(/leagueId=(\d+)/)||[])[1]||'216270753',Y=(U.match(/seasonId=(\d+)/)||[])[1]||'2026',B='https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/'+Y;const lg=await fetch(B+'/segments/0/leagues/'+L+'?view=mDraftDetail&view=mTeam',{credentials:'include'}).then(r=>r.json());const mem={};(lg.members||[]).forEach(m=>mem[m.id]=m.displayName);const tm={};(lg.teams||[]).forEach(t=>tm[t.id]=((t.owners||[]).map(o=>mem[o]||o).join('/'))||t.abbrev);const picks=((lg.draftDetail||{}).picks||[]).filter(p=>p.playerId>0);const ids=[...new Set(picks.map(p=>p.playerId))];const nm={},pm={1:'QB',2:'RB',3:'WR',4:'TE',5:'K',16:'D/ST'};for(let i=0;i<ids.length;i+=250){const f=JSON.stringify({players:{filterIds:{value:ids.slice(i,i+250)},limit:300}});const pr=await fetch(B+'/players?scoringPeriodId=0&view=players_wl',{credentials:'include',headers:{'x-fantasy-filter':f}}).then(r=>r.json());(pr||[]).forEach(p=>nm[p.id]=[p.fullName,pm[p.defaultPositionId]||'?']);}const T={};picks.forEach(p=>{const o=tm[p.teamId]||('team'+p.teamId);(T[o]=T[o]||[]).push({n:(nm[p.playerId]||['id'+p.playerId,'?'])[0],p:(nm[p.playerId]||['','?'])[1],price:p.bidAmount||0,keeper:!!p.keeper});});const out={teams:Object.entries(T).map(([owner,picks])=>({owner,picks}))};await navigator.clipboard.writeText(JSON.stringify(out));alert('Draft copied: '+picks.length+' picks across '+out.teams.length+' teams. Paste into the Draft Day Tool.');}catch(e){alert('Sync failed: '+e+'\nTry running it from your ESPN league page while logged in.');}})();</script>
+  <div class="small" style="margin-top:12px;line-height:1.7">
+    <b>⚡ Live sync (best — for when you launch via Start_Draft_Tool):</b> drag this to your bookmarks bar:<br>
+    <a id="bmlink2" href="#" draggable="true" style="display:inline-block;margin:6px 0;padding:5px 12px;background:#16a34a;color:#fff;border-radius:6px;text-decoration:none;font-weight:700">⚡ GG Live Sync</a><br>
+    With the tool running from <b>Start_Draft_Tool</b> (localhost), just click this on your ESPN tab — the draft is sent to the tool and this page updates itself within a few seconds. No copy, no paste, no tab switching. (If you opened the tool by double-clicking the file instead, this won't reach it — use the clipboard button above.)
+  </div>
+  <script type="text/plain" id="bmsrc2">javascript:(async()=>{try{const U=location.href,L=(U.match(/leagueId=(\d+)/)||[])[1]||'216270753',Y=(U.match(/seasonId=(\d+)/)||[])[1]||'2026',B='https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/'+Y;const lg=await fetch(B+'/segments/0/leagues/'+L+'?view=mDraftDetail&view=mTeam',{credentials:'include'}).then(r=>r.json());const mem={};(lg.members||[]).forEach(m=>mem[m.id]=m.displayName);const tm={};(lg.teams||[]).forEach(t=>tm[t.id]=((t.owners||[]).map(o=>mem[o]||o).join('/'))||t.abbrev);const picks=((lg.draftDetail||{}).picks||[]).filter(p=>p.playerId>0);const ids=[...new Set(picks.map(p=>p.playerId))];const nm={},pm={1:'QB',2:'RB',3:'WR',4:'TE',5:'K',16:'D/ST'};for(let i=0;i<ids.length;i+=250){const f=JSON.stringify({players:{filterIds:{value:ids.slice(i,i+250)},limit:300}});const pr=await fetch(B+'/players?scoringPeriodId=0&view=players_wl',{credentials:'include',headers:{'x-fantasy-filter':f}}).then(r=>r.json());(pr||[]).forEach(p=>nm[p.id]=[p.fullName,pm[p.defaultPositionId]||'?']);}const T={};picks.forEach(p=>{const o=tm[p.teamId]||('team'+p.teamId);(T[o]=T[o]||[]).push({n:(nm[p.playerId]||['id'+p.playerId,'?'])[0],p:(nm[p.playerId]||['','?'])[1],price:p.bidAmount||0,keeper:!!p.keeper});});const out={teams:Object.entries(T).map(([owner,picks])=>({owner,picks}))};try{await fetch('http://localhost:8000/draft',{method:'POST',body:JSON.stringify(out),mode:'no-cors'});alert('Live-synced '+picks.length+' picks to your Draft Tool.');}catch(e){alert('Could not reach the Draft Tool server. Make sure Start_Draft_Tool is running.');}}catch(e){alert('Live sync failed: '+e);}})();</script></details>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <div class="tabs" id="tabs">
+      <button data-f="ALL" class="on">All</button><button data-f="RB">RB</button><button data-f="WR">WR</button>
+      <button data-f="QB">QB</button><button data-f="TE">TE</button><button data-f="K">K</button><button data-f="D/ST">D/ST</button>
+    </div>
+    <label class="small"><input type="checkbox" id="hidegone" checked> hide drafted/gone</label>
+  </div>
+  <div class="boardwrap"><table id="board"><thead><tr>
+    <th data-s="n">Player</th><th data-s="p">Pos</th><th class="num" data-s="f">Fair $</th>
+    <th class="num" data-s="lp">Lg $</th><th class="num" data-s="e">ESPN $</th><th>Status / action</th>
+  </tr></thead><tbody id="brows"></tbody></table></div>
+</div>
+<div class="small" style="margin-top:8px">Values = VOR on ESPN 2026 projections; "Lg $" = league-adjusted price. Keeper (Puka $58) pre-loaded. State saves in this browser.</div>
+</div>
+
+<script>
+const PLAYERS=[{"n":"Jahmyr Gibbs","p":"RB","f":80,"lp":78,"e":63,"k":"Chance"},{"n":"Puka Nacua","p":"WR","f":76,"lp":75,"e":58,"k":"Ian"},{"n":"Bijan Robinson","p":"RB","f":75,"lp":73,"e":62,"k":""},{"n":"Christian McCaffrey","p":"RB","f":71,"lp":69,"e":52,"k":""},{"n":"Ja'Marr Chase","p":"WR","f":68,"lp":66,"e":57,"k":""},{"n":"Jaxon Smith-Njigba","p":"WR","f":64,"lp":62,"e":54,"k":"Simon"},{"n":"Amon-Ra St. Brown","p":"WR","f":63,"lp":61,"e":50,"k":""},{"n":"Jonathan Taylor","p":"RB","f":60,"lp":58,"e":50,"k":"Andy"},{"n":"CeeDee Lamb","p":"WR","f":50,"lp":49,"e":47,"k":""},{"n":"Justin Jefferson","p":"WR","f":50,"lp":49,"e":46,"k":""},{"n":"De'Von Achane","p":"RB","f":50,"lp":49,"e":45,"k":""},{"n":"Ashton Jeanty","p":"RB","f":45,"lp":44,"e":38,"k":""},{"n":"James Cook III","p":"RB","f":44,"lp":43,"e":43,"k":"Zach"},{"n":"Omarion Hampton","p":"RB","f":44,"lp":43,"e":35,"k":""},{"n":"Jeremiyah Love","p":"RB","f":44,"lp":43,"e":37,"k":""},{"n":"Derrick Henry","p":"RB","f":42,"lp":41,"e":33,"k":""},{"n":"Saquon Barkley","p":"RB","f":42,"lp":41,"e":36,"k":""},{"n":"Josh Jacobs","p":"RB","f":42,"lp":41,"e":28,"k":""},{"n":"Breece Hall","p":"RB","f":41,"lp":40,"e":22,"k":""},{"n":"Kenneth Walker III","p":"RB","f":41,"lp":40,"e":31,"k":""},{"n":"Chase Brown","p":"RB","f":41,"lp":40,"e":31,"k":""},{"n":"Rashee Rice","p":"WR","f":40,"lp":39,"e":33,"k":"Gerk"},{"n":"Drake London","p":"WR","f":40,"lp":39,"e":36,"k":""},{"n":"Josh Allen","p":"QB","f":37,"lp":36,"e":28,"k":""},{"n":"Javonte Williams","p":"RB","f":35,"lp":35,"e":22,"k":"Ryan"},{"n":"Trey McBride","p":"TE","f":34,"lp":34,"e":34,"k":""},{"n":"Brock Bowers","p":"TE","f":34,"lp":33,"e":30,"k":"Dawkins"},{"n":"Nico Collins","p":"WR","f":31,"lp":31,"e":27,"k":""},{"n":"A.J. Brown","p":"WR","f":31,"lp":30,"e":28,"k":""},{"n":"Garrett Wilson","p":"WR","f":31,"lp":30,"e":24,"k":""},{"n":"Chris Olave","p":"WR","f":30,"lp":29,"e":24,"k":"Alec"},{"n":"Cam Skattebo","p":"RB","f":28,"lp":28,"e":18,"k":""},{"n":"Travis Etienne Jr.","p":"RB","f":28,"lp":28,"e":17,"k":"Derek"},{"n":"Tetairoa McMillan","p":"WR","f":28,"lp":27,"e":20,"k":"Joles"},{"n":"George Pickens","p":"WR","f":27,"lp":26,"e":26,"k":""},{"n":"Zay Flowers","p":"WR","f":27,"lp":26,"e":19,"k":""},{"n":"DeVonta Smith","p":"WR","f":27,"lp":26,"e":19,"k":""},{"n":"Davante Adams","p":"WR","f":24,"lp":24,"e":15,"k":""},{"n":"Kyren Williams","p":"RB","f":24,"lp":24,"e":20,"k":""},{"n":"Malik Nabers","p":"WR","f":24,"lp":24,"e":22,"k":""},{"n":"Emeka Egbuka","p":"WR","f":23,"lp":22,"e":18,"k":""},{"n":"Quinshon Judkins","p":"RB","f":21,"lp":21,"e":16,"k":""},{"n":"Tyler Warren","p":"TE","f":20,"lp":20,"e":13,"k":""},{"n":"Colston Loveland","p":"TE","f":19,"lp":18,"e":13,"k":""},{"n":"Ladd McConkey","p":"WR","f":19,"lp":17,"e":14,"k":""},{"n":"Tee Higgins","p":"WR","f":18,"lp":17,"e":12,"k":""},{"n":"Terry McLaurin","p":"WR","f":18,"lp":16,"e":12,"k":""},{"n":"Lamar Jackson","p":"QB","f":18,"lp":16,"e":15,"k":""},{"n":"Jalen Hurts","p":"QB","f":17,"lp":15,"e":10,"k":""},{"n":"Drake Maye","p":"QB","f":16,"lp":15,"e":11,"k":""},{"n":"Jaylen Waddle","p":"WR","f":16,"lp":15,"e":12,"k":""},{"n":"Rome Odunze","p":"WR","f":16,"lp":15,"e":8,"k":""},{"n":"Jayden Daniels","p":"QB","f":16,"lp":14,"e":10,"k":""},{"n":"D'Andre Swift","p":"RB","f":16,"lp":14,"e":8,"k":""},{"n":"Carnell Tate","p":"WR","f":15,"lp":14,"e":8,"k":""},{"n":"DJ Moore","p":"WR","f":15,"lp":14,"e":8,"k":""},{"n":"Jameson Williams","p":"WR","f":14,"lp":13,"e":10,"k":""},{"n":"TreVeyon Henderson","p":"RB","f":14,"lp":13,"e":8,"k":""},{"n":"Bucky Irving","p":"RB","f":14,"lp":13,"e":15,"k":""},{"n":"Luther Burden III","p":"WR","f":13,"lp":12,"e":8,"k":""},{"n":"Bhayshul Tuten","p":"RB","f":13,"lp":12,"e":8,"k":""},{"n":"Courtland Sutton","p":"WR","f":12,"lp":11,"e":5,"k":""},{"n":"Alec Pierce","p":"WR","f":12,"lp":11,"e":4,"k":""},{"n":"Sam LaPorta","p":"TE","f":12,"lp":11,"e":6,"k":""},{"n":"Harold Fannin Jr.","p":"TE","f":11,"lp":10,"e":5,"k":""},{"n":"Kyle Pitts Sr.","p":"TE","f":10,"lp":10,"e":6,"k":""},{"n":"Joe Burrow","p":"QB","f":10,"lp":9,"e":8,"k":""},{"n":"Michael Pittman Jr.","p":"WR","f":9,"lp":8,"e":4,"k":""},{"n":"Jaxson Dart","p":"QB","f":9,"lp":8,"e":5,"k":""},{"n":"DK Metcalf","p":"WR","f":9,"lp":8,"e":4,"k":""},{"n":"Jadarian Price","p":"RB","f":8,"lp":8,"e":8,"k":""},{"n":"Marvin Harrison Jr.","p":"WR","f":8,"lp":8,"e":4,"k":""},{"n":"David Montgomery","p":"RB","f":8,"lp":7,"e":8,"k":""},{"n":"George Kittle","p":"TE","f":7,"lp":6,"e":3,"k":""},{"n":"Travis Kelce","p":"TE","f":7,"lp":6,"e":2,"k":""},{"n":"Jaylen Warren","p":"RB","f":7,"lp":6,"e":3,"k":""},{"n":"Dallas Goedert","p":"TE","f":7,"lp":6,"e":2,"k":""},{"n":"Rhamondre Stevenson","p":"RB","f":7,"lp":6,"e":2,"k":""},{"n":"Tony Pollard","p":"RB","f":6,"lp":6,"e":5,"k":""},{"n":"Bo Nix","p":"QB","f":6,"lp":6,"e":3,"k":""},{"n":"Aaron Jones Sr.","p":"RB","f":6,"lp":6,"e":1,"k":""},{"n":"Jordyn Tyson","p":"WR","f":6,"lp":15,"e":3,"k":""},{"n":"Matthew Stafford","p":"QB","f":5,"lp":14,"e":4,"k":""},{"n":"Parker Washington","p":"WR","f":5,"lp":14,"e":3,"k":""},{"n":"Brock Purdy","p":"QB","f":5,"lp":13,"e":3,"k":""},{"n":"Tucker Kraft","p":"TE","f":5,"lp":12,"e":3,"k":""},{"n":"Christian Watson","p":"WR","f":5,"lp":12,"e":3,"k":""},{"n":"Rico Dowdle","p":"RB","f":5,"lp":12,"e":2,"k":""},{"n":"Matthew Golden","p":"WR","f":5,"lp":12,"e":2,"k":""},{"n":"Mark Andrews","p":"TE","f":4,"lp":10,"e":1,"k":""},{"n":"Patrick Mahomes","p":"QB","f":4,"lp":10,"e":3,"k":""},{"n":"Chuba Hubbard","p":"RB","f":4,"lp":9,"e":2,"k":""},{"n":"Mike Evans","p":"WR","f":4,"lp":9,"e":5,"k":""},{"n":"Jakobi Meyers","p":"WR","f":3,"lp":8,"e":2,"k":""},{"n":"Trevor Lawrence","p":"QB","f":3,"lp":8,"e":3,"k":""},{"n":"Jake Ferguson","p":"TE","f":3,"lp":8,"e":2,"k":""},{"n":"Dak Prescott","p":"QB","f":3,"lp":7,"e":4,"k":""},{"n":"Kenny Gainwell","p":"RB","f":2,"lp":5,"e":1,"k":""},{"n":"Brandon Aubrey","p":"K","f":1,"lp":3,"e":5,"k":""},{"n":"Cameron Dicker","p":"K","f":1,"lp":3,"e":2,"k":""},{"n":"Texans D/ST","p":"D/ST","f":1,"lp":3,"e":4,"k":""},{"n":"Broncos D/ST","p":"D/ST","f":1,"lp":3,"e":4,"k":""},{"n":"Seahawks D/ST","p":"D/ST","f":1,"lp":3,"e":2,"k":""},{"n":"Jason Myers","p":"K","f":1,"lp":3,"e":2,"k":""},{"n":"Rams D/ST","p":"D/ST","f":1,"lp":3,"e":4,"k":""},{"n":"Steelers D/ST","p":"D/ST","f":1,"lp":3,"e":1,"k":""},{"n":"Ka'imi Fairbairn","p":"K","f":1,"lp":3,"e":1,"k":""},{"n":"Harrison Mevis","p":"K","f":1,"lp":3,"e":1,"k":""},{"n":"Caleb Williams","p":"QB","f":1,"lp":3,"e":4,"k":""},{"n":"Cam Little","p":"K","f":1,"lp":3,"e":1,"k":""},{"n":"Ravens D/ST","p":"D/ST","f":1,"lp":3,"e":1,"k":""},{"n":"Justin Herbert","p":"QB","f":1,"lp":3,"e":3,"k":""},{"n":"Eagles D/ST","p":"D/ST","f":1,"lp":3,"e":1,"k":""},{"n":"Brian Thomas Jr.","p":"WR","f":1,"lp":3,"e":2,"k":""},{"n":"Makai Lemon","p":"WR","f":1,"lp":3,"e":2,"k":""},{"n":"Michael Wilson","p":"WR","f":1,"lp":3,"e":2,"k":""},{"n":"Wan'Dale Robinson","p":"WR","f":1,"lp":3,"e":2,"k":""},{"n":"J.K. Dobbins","p":"RB","f":1,"lp":3,"e":2,"k":""},{"n":"Eddy Pineiro","p":"K","f":1,"lp":3,"e":1,"k":""},{"n":"RJ Harvey","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Isaiah Likely","p":"TE","f":1,"lp":3,"e":1,"k":""},{"n":"Kyle Monangai","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Rachaad White","p":"RB","f":1,"lp":3,"e":2,"k":""},{"n":"Jordan Addison","p":"WR","f":1,"lp":3,"e":2,"k":""},{"n":"Patriots D/ST","p":"D/ST","f":1,"lp":3,"e":1,"k":""},{"n":"Josh Downs","p":"WR","f":1,"lp":3,"e":2,"k":""},{"n":"Blake Corum","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Chris Godwin Jr.","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Xavier Worthy","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Jonathon Brooks","p":"RB","f":1,"lp":3,"e":2,"k":""},{"n":"Khalil Shakir","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Quentin Johnston","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Harrison Butker","p":"K","f":1,"lp":3,"e":1,"k":""},{"n":"Travis Hunter","p":"WR","f":1,"lp":3,"e":2,"k":""},{"n":"Jake Bates","p":"K","f":1,"lp":3,"e":1,"k":""},{"n":"Kenyon Sadiq","p":"TE","f":1,"lp":3,"e":1,"k":""},{"n":"Jayden Reed","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Jacory Croskey-Merritt","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"T.J. Hockenson","p":"TE","f":1,"lp":3,"e":1,"k":""},{"n":"KC Concepcion","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Romeo Doubs","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Woody Marks","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Zach Charbonnet","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Lions D/ST","p":"D/ST","f":1,"lp":3,"e":1,"k":""},{"n":"Browns D/ST","p":"D/ST","f":1,"lp":3,"e":1,"k":""},{"n":"Dalton Kincaid","p":"TE","f":1,"lp":3,"e":1,"k":""},{"n":"Jared Goff","p":"QB","f":1,"lp":3,"e":1,"k":""},{"n":"Deebo Samuel Sr.","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Jaguars D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Alvin Kamara","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Jordan Mason","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Kyler Murray","p":"QB","f":1,"lp":3,"e":1,"k":""},{"n":"Isiah Pacheco","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Hunter Henry","p":"TE","f":1,"lp":3,"e":1,"k":""},{"n":"Tyler Loop","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Stefon Diggs","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Ricky Pearsall","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Chargers D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Baker Mayfield","p":"QB","f":1,"lp":3,"e":1,"k":""},{"n":"Tyler Shough","p":"QB","f":1,"lp":3,"e":1,"k":""},{"n":"Jalen Coker","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Tyjae Spears","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Chris Boswell","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Rashid Shaheed","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Jayden Higgins","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Chiefs D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Cairo Santos","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Vikings D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Will Reichard","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Jerry Jeudy","p":"WR","f":1,"lp":3,"e":1,"k":""},{"n":"Daniel Jones","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Jordan Love","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Juwan Johnson","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Calvin Ridley","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Omar Cooper Jr.","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Jalen McMillan","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Chase McLaughlin","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Tyler Allgeier","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Chris Rodriguez Jr.","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Sam Darnold","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"C.J. Stroud","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Denzel Boston","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Tyrone Tracy Jr.","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Packers D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Brenton Strange","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Tank Bigsby","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Brian Robinson Jr.","p":"RB","f":1,"lp":3,"e":1,"k":""},{"n":"Fernando Mendoza","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Tre Tucker","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Tank Dell","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Evan McPherson","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Tyreek Hill","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Malik Willis","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Terrance Ferguson","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Oronde Gadsden","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Cam Ward","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Dalton Schultz","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Jauan Jennings","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Cowboys D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Chig Okonkwo","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Bears D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Buccaneers D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"De'Zhaun Stribling","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Germie Bernard","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Cooper Kupp","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Pat Freiermuth","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"49ers D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Darnell Mooney","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"James Conner","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Jake Elliott","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Bryce Young","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Jalen Nailor","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Antonio Williams","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Mike Washington Jr.","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Adonai Mitchell","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Braelon Allen","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Brandon Aiyuk","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Keaton Mitchell","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"AJ Barner","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Saints D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Trey Smack","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Ray Davis","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Dylan Sampson","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Justice Hill","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Bills D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Rashod Bateman","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Titans D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Aaron Rodgers","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Zachariah Branch","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Isaac TeSlaa","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Wil Lutz","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Nick Folk","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"George Holani","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Chris Bell","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"David Njoku","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Ja'Kobi Lane","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Colts D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Malik Washington","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Gunnar Helm","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Andy Borregales","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Giants D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Odell Beckham Jr.","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Jonah Coleman","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Jake Tonges","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Greg Dulcich","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Tre' Harris","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Evan Engram","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Jacoby Brissett","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Ryan Flournoy","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Kayshon Boutte","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"MarShawn Lloyd","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Jordan James","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Geno Smith","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Bengals D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Cade Otton","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Shedeur Sanders","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Cyrus Allen","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Nicholas Singleton","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Tyler Bass","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Emmett Johnson","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Jack Bech","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Kaelon Black","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Mike Gesicki","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Christian Kirk","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Samaje Perine","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Jaydon Blue","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Xavier Legette","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Keon Coleman","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Tua Tagovailoa","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Raiders D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Panthers D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Kimani Vidal","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Falcons D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Troy Franklin","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Jaylin Noel","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Colby Parkinson","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Darnell Washington","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Charlie Smyth","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Kirk Cousins","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Tory Horton","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Pat Bryant","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Dontayvion Wicks","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Chimere Dike","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Kaytron Allen","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Darius Slayton","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Jason Sanders","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Eli Stowers","p":"TE","f":1,"lp":3,"e":0,"k":""},{"n":"Deshaun Watson","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Jets D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Commanders D/ST","p":"D/ST","f":1,"lp":3,"e":0,"k":""},{"n":"Devaughn Vele","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Carson Beck","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Demond Claiborne","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"J.J. McCarthy","p":"QB","f":1,"lp":3,"e":0,"k":""},{"n":"Jaylen Wright","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Emanuel Wilson","p":"RB","f":1,"lp":3,"e":0,"k":""},{"n":"Malachi Fields","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Matt Gay","p":"K","f":1,"lp":3,"e":0,"k":""},{"n":"Caleb Douglas","p":"WR","f":1,"lp":3,"e":0,"k":""},{"n":"Blake Grupe","p":"K","f":1,"lp":3,"e":0,"k":""}];
+const SLOTS=['QB','RB','RB','WR','WR','TE','FLEX','K','DST'];const ROSTER_MAX=16;
+const NEED={QB:1,RB:2,WR:2,TE:1,K:1,'D/ST':1}; // starter minimums for competition calc
+const PLANS={A:{name:'RB-Heavy',t:{RB:89,WR:85,QB:10,TE:7,K:1,'D/ST':1}},
+             B:{name:'Two-Stud',t:{RB:82,WR:76,QB:9,TE:7,K:1,'D/ST':1}},
+             C:{name:'Balanced',t:{RB:65,WR:89,QB:18,TE:12,K:1,'D/ST':1}}};
+const KEY='gg_draft_2026_v2';
+// practice draft: 2026 keepers + a few early buys, so you can rehearse the tool
+const DEMO={teams:[
+ {owner:'IanP123',picks:[{n:'Puka Nacua',p:'WR',price:58,keeper:true}]},
+ {owner:'Chance145',picks:[{n:'Jahmyr Gibbs',p:'RB',price:52,keeper:true},{n:'Bijan Robinson',p:'RB',price:70,keeper:false}]},
+ {owner:'SimonMiller',picks:[{n:'Jaxon Smith-Njigba',p:'WR',price:44,keeper:true}]},
+ {owner:'ajg21',picks:[{n:'Jonathan Taylor',p:'RB',price:41,keeper:true},{n:"Ja'Marr Chase",p:'WR',price:60,keeper:false}]},
+ {owner:'zach_montoya',picks:[{n:'James Cook III',p:'RB',price:36,keeper:true}]},
+ {owner:'JGERK',picks:[{n:'Rashee Rice',p:'WR',price:24,keeper:true}]},
+ {owner:'madmax101010',picks:[{n:'Brock Bowers',p:'TE',price:30,keeper:true}]},
+ {owner:'Brotesk',picks:[{n:'Chris Olave',p:'WR',price:18,keeper:true}]},
+ {owner:'BurrowingMule',picks:[{n:'Travis Etienne Jr.',p:'RB',price:20,keeper:true},{n:'Josh Allen',p:'QB',price:30,keeper:false}]},
+ {owner:'Joles',picks:[{n:'Tetairoa McMillan',p:'WR',price:15,keeper:true}]},
+ {owner:'Ryan505',picks:[{n:'Javonte Williams',p:'RB',price:14,keeper:true}]},
+ {owner:'rickbraaten',picks:[{n:'Christian McCaffrey',p:'RB',price:55,keeper:false}]}
+]};
+const byName={};PLAYERS.forEach(p=>byName[p.n]=p);
+// ---- tiers ----
+// starter pool per position (12 teams): how many of each get STARTED leaguewide (incl flex share)
+const SPOOL={QB:12,RB:30,WR:40,TE:12,K:12,'D/ST':12};
+// custom tier boundaries (rank index) per position; positions not listed default to even thirds.
+// RB tightened: elite = top 7 true difference-makers, mid = next 11, value = rest of the starter pool.
+const TIERCUT={RB:{elite:7,mid:18}};
+const TORDER=['elite','mid','value','bench'];
+(function(){const g={};PLAYERS.forEach(p=>(g[p.p]=g[p.p]||[]).push(p));
+  Object.entries(g).forEach(([pos,arr])=>{arr.sort((a,b)=>b.f-a.f);const sp=SPOOL[pos]||12;
+    const cut=TIERCUT[pos]||{elite:Math.floor(sp/3),mid:Math.floor(sp*2/3)};
+    arr.forEach((p,i)=>{p._tier=i<cut.elite?'elite':i<cut.mid?'mid':i<sp?'value':'bench';});});})();
+// which tier each plan is shopping in, per position (tweak freely)
+const PTIER={
+  A:{RB:'elite',WR:'mid',QB:'value',TE:'value',K:'value','D/ST':'value'},  // RB-Heavy: pay up RB, mid WRs, punt QB/TE
+  B:{RB:'elite',WR:'elite',QB:'value',TE:'value',K:'value','D/ST':'value'},// Two-Stud: elite RB + elite WR, punt rest
+  C:{RB:'mid',WR:'mid',QB:'mid',TE:'mid',K:'value','D/ST':'value'}};       // Balanced: mid everywhere
+let S=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.picks)return s}catch(e){}
+  return {budget:200,plan:'A',myteam:'IanP123',picks:[{n:'Puka Nacua',p:'WR',price:58}],gone:[],espn:null};}
+function save(){localStorage.setItem(KEY,JSON.stringify(S));}
+function status(n){if(S.picks.some(x=>x.n===n))return'mine';if(S.gone.some(x=>x.n===n))return'gone';return'avail';}
+function spent(){return S.picks.reduce((a,x)=>a+(+x.price||0),0);}
+function remaining(){return S.budget-spent();}
+function openSpots(){return ROSTER_MAX-S.picks.length;}
+function maxBidNow(){return Math.max(0,remaining()-(openSpots()-1));}
+function inflation(){let sp=0,sf=0,n=0;let src=S.espn?S.espn.all:[...S.picks,...S.gone];
+  src.forEach(x=>{const p=byName[x.n];if(p&&x.price!=null&&!x.keeper){sp+=+x.price;sf+=p.f;n++}});
+  if(n<4||sf<=0)return{f:1,n:n};return{f:Math.min(1.8,Math.max(.7,sp/sf)),n:n};}
+function posSpend(){const ps={};S.picks.forEach(pk=>ps[pk.p]=(ps[pk.p]||0)+(+pk.price));return ps;}
+function assign(){const used=SLOTS.map(()=>null);const bench=[];
+  S.picks.forEach(pk=>{let slot=-1;for(let i=0;i<SLOTS.length;i++){if(!used[i]&&SLOTS[i]===pk.p){slot=i;break;}}
+    if(slot<0&&['RB','WR','TE'].includes(pk.p)){const fi=SLOTS.indexOf('FLEX');if(fi>=0&&!used[fi])slot=fi;}
+    if(slot<0)bench.push(pk);else used[slot]=pk;});
+  return{used,bench};}
+// ---- render ----
+function render(){
+  document.getElementById('remain').textContent='$'+remaining();
+  document.getElementById('maxnow').textContent='$'+maxBidNow();
+  document.getElementById('slots').textContent=S.picks.length+'/'+ROSTER_MAX;
+  const inf=inflation();document.getElementById('infl').textContent=inf.n<4?'—':(inf.f.toFixed(2)+'×');
+  document.getElementById('budget').value=S.budget;document.getElementById('plan').value=S.plan;document.getElementById('myteam').value=S.myteam;
+  const {used,bench}=assign();let h='';
+  SLOTS.forEach((s,i)=>{const pk=used[i];h+=`<div class="slotrow"><span>${s}</span>`+(pk?`<span class="have">${pk.n} <b>$${pk.price}</b></span>`:`<span class="need">— open —</span>`)+`</div>`;});
+  h+=`<div class="slotrow" style="border-top:1px dashed var(--line)"><span>BENCH (${bench.length})</span><span class="have">${bench.map(b=>b.n+' $'+b.price).join(', ')||'—'}</span></div>`;
+  document.getElementById('roster').innerHTML=h;
+  renderBars();renderComp();renderBoard();renderVerdict();buildDatalist();save();
+}
+function renderBars(){
+  const pl=PLANS[S.plan];document.getElementById('planName').textContent='('+pl.name+')';
+  const ps=posSpend();let h='';let over=[];
+  ['RB','WR','QB','TE','K','D/ST'].forEach(pos=>{
+    const sp=ps[pos]||0,tg=pl.t[pos]||1;const pct=Math.min(100,sp/tg*100);const cls=sp>tg+3?'over':(sp>=tg-1?'done':'');
+    if(sp>tg+5)over.push(pos);
+    h+=`<div class="brow"><span class="pill ${pos}">${pos}</span><div class="bar ${cls}"><span style="width:${pct}%"></span></div><span class="small">$${sp} / $${tg}</span></div>`;});
+  document.getElementById('bars').innerHTML=h;
+  document.getElementById('planNote').innerHTML= over.length?`<span class="hot">Over Plan ${S.plan} at: ${over.join(', ')}.</span> Rebalance — pull back there.`:`On plan. Reminder: RB-forward, punt QB/TE, don't chase $1 fliers.`;
+}
+function renderComp(){
+  const el=document.getElementById('comp');
+  if(!S.espn){el.innerHTML='<div class="small">Import the live draft (below) to see who still needs each position, the projected price of the best guy left, and whether you\'re falling behind.</div>';document.getElementById('compAsOf').textContent='';return;}
+  document.getElementById('compAsOf').textContent='· '+S.espn.teams.length+' teams synced';
+  const inf=inflation().f;const myRem=remaining();const pl=PLANS[S.plan];const ps=posSpend();const cap=maxBidNow();
+  const behindList=[];const dryList=[];
+  const projP=p=>Math.max(1,Math.round(p.f*inf));
+  const rows=['RB','WR','QB','TE','D/ST','K'].map(pos=>{
+    // demand across the league
+    let nNeed=0,budg=0,rivalsRicher=0;
+    S.espn.teams.forEach(t=>{
+      const isMe=(t.owner||'').toLowerCase().includes((S.myteam||'').toLowerCase());if(isMe)return;
+      const cnt=t.picks.filter(p=>p.p===pos).length;const rem=S.budget-t.picks.reduce((a,p)=>a+(+p.price||0),0);
+      if(cnt<(NEED[pos]||1)&&rem>=3){nNeed++;budg+=rem;if(rem>myRem)rivalsRicher++;}
+    });
+    // best available + projected clearing price (fair x inflation x demand premium)
+    const avail=PLAYERS.filter(p=>p.p===pos&&status(p.n)==='avail'&&p._tier!=='bench').sort((a,b)=>b.f-a.f);
+    const best=avail[0];const dem=Math.min(1.35,1+0.05*Math.max(0,nNeed-3));
+    const proj=best?Math.max(1,Math.round(best.f*inf*dem)):0;
+    // ---- tier counter: how many of YOUR plan's tier are left, and affordable ----
+    const T=PTIER[S.plan][pos]||'value';
+    const inTier=PLAYERS.filter(p=>p.p===pos&&p._tier===T&&status(p.n)==='avail');
+    const aff=inTier.filter(p=>projP(p)<=cap).length;
+    const nextT=TORDER[TORDER.indexOf(T)+1]||'—';
+    const nextCnt=PLAYERS.filter(p=>p.p===pos&&p._tier===nextT&&status(p.n)==='avail'&&projP(p)<=cap).length;
+    const tierScarce=aff<=1;
+    // my situation
+    const myHave=S.picks.filter(p=>p.p===pos).length;const myNeed=myHave<(NEED[pos]||1);
+    const myLeft=Math.max(0,(pl.t[pos]||0)-(ps[pos]||0));
+    let read;
+    if(!myNeed){read='<span class="cool">set ✓</span>';}
+    else{const behind=(proj>Math.max(3,myLeft))||rivalsRicher>=3||aff===0;
+      if(behind){read='<span class="hot">behind — push/downgrade</span>';behindList.push(pos);}
+      else read='<span>in range</span>';
+      if(tierScarce&&aff>0)dryList.push(`${pos} (${aff} ${T} left)`);}
+    const hotN=nNeed>=6?'hot':(nNeed<=2?'cool':'');
+    const tierCell=`<span class="${tierScarce?'hot':''}">${aff} ${T}</span> <span class="small">→ ${nextCnt} ${nextT}</span>`;
+    return `<tr><td><span class="pill ${pos}">${pos}</span></td><td class="num ${hotN}">${nNeed}</td><td>${best?best.n+' <b>$'+proj+'</b>':'—'}</td><td>${tierCell}</td><td class="num">$${myLeft}</td><td>${read}</td></tr>`;
+  }).join('');
+  el.innerHTML=`<table class="comp"><thead><tr><th>pos</th><th class="num">need</th><th>best left (proj $)</th><th>your tier left (afford)</th><th class="num">your $ left</th><th>read</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="small" style="margin-top:6px">${behindList.length?`<span class="hot">Falling behind at: ${behindList.join(', ')}.</span> Best one left costs more than your plan budget, 3+ richer teams need it, or your tier is empty — bid now or drop a tier.`:`Positions you still need are within budget. Hold the plan.`}</div>
+    ${dryList.length?`<div class="small"><span class="hot">Running low in-tier:</span> ${dryList.join(', ')} — grab one before it drops to ${'the next tier'}.</div>`:''}
+    <div class="small" style="margin-top:4px">"your tier left" = affordable (≤ $${cap} now) players still on the board in Plan ${S.plan}'s target tier for that spot, then how many in the tier below. Tiers by fair value: elite / mid / value / bench. proj $ includes live inflation (${inf.toFixed(2)}×) + demand.</div>`;
+}
+let filt='ALL',sortKey='f',sortAsc=false;
+function buildDatalist(){document.getElementById('dl').innerHTML=PLAYERS.filter(p=>status(p.n)==='avail').map(p=>`<option value="${p.n}">`).join('');}
+function renderBoard(){
+  const hide=document.getElementById('hidegone').checked;
+  let rows=PLAYERS.filter(p=>filt==='ALL'||p.p===filt);
+  if(hide)rows=rows.filter(p=>status(p.n)==='avail');
+  rows.sort((a,b)=>{const d=(a[sortKey]>b[sortKey]?1:a[sortKey]<b[sortKey]?-1:0);return sortAsc?d:-d;});
+  document.getElementById('brows').innerHTML=rows.slice(0,220).map(p=>{
+    const st=status(p.n);
+    const act= st==='mine'?`<span style="color:var(--green)">✓ mine</span>`:st==='gone'?`<span style="color:var(--red)">gone</span>`:`<button data-pick="${p.n}">pick</button>`;
+    const kf=p.k?` <span class="kflag">(likely kept: ${p.k})</span>`:'';
+    return `<tr style="${st!=='avail'?'opacity:.5':''}"><td>${p.n}${kf}</td><td><span class="pill ${p.p}">${p.p}</span></td><td class="num">${p.f}</td><td class="num">${p.lp}</td><td class="num">${p.e}</td><td>${act}</td></tr>`;
+  }).join('');
+  document.querySelectorAll('#brows [data-pick]').forEach(b=>b.onclick=()=>{document.getElementById('search').value=b.dataset.pick;render();document.getElementById('bid').focus();});
+}
+function currentPlayer(){return byName[document.getElementById('search').value.trim()]||null;}
+function renderVerdict(){
+  const p=currentPlayer();const info=document.getElementById('pinfo');const vd=document.getElementById('verdict');
+  if(!p){info.textContent='Pick a player to see the read.';vd.style.display='none';return;}
+  const bid=+document.getElementById('bid').value||0;const inf=inflation().f;
+  const valueMax=Math.max(1,Math.round(p.f*inf));const hard=maxBidNow();
+  const {used}=assign();const needExact=SLOTS.some((s,i)=>!used[i]&&s===p.p);
+  const needFlex=['RB','WR','TE'].includes(p.p)&&SLOTS.some((s,i)=>!used[i]&&s==='FLEX');
+  const pl=PLANS[S.plan];const ps=posSpend();const posLeft=(pl.t[p.p]||0)-(ps[p.p]||0);
+  info.innerHTML=`<b>${p.n}</b> <span class="pill ${p.p}">${p.p}</span> — fair <b>$${p.f}</b>, league <b>$${p.lp}</b>, ESPN $${p.e}${p.k?` · <span class="kflag">likely kept ${p.k}</span>`:''}
+   <div class="reco">value max $${valueMax} · afford cap $${hard} · Plan ${S.plan} ${p.p} budget left $${posLeft} · ${needExact?'fills '+p.p:needFlex?'fills FLEX':'bench/extra'}</div>`;
+  let cls='v-go',msg='';
+  if(bid>hard){cls='v-stop';msg=`🛑 CAN'T AFFORD — max $${hard} or you can't fill every slot`;}
+  else if(p.f<6&&bid>2){cls='v-warn';msg=`⚠ SLEEPER TRAP — league overbids these ~2.6×. Cap ~$2.`;}
+  else if((p.p==='TE'||p.p==='QB')&&bid>p.f){cls='v-warn';msg=`⚠ Don't pay up for ${p.p} — value $${p.f}.`;}
+  else if(bid>posLeft+5 && (p.p==='RB'||p.p==='WR'||p.p==='TE'||p.p==='QB')){cls='v-warn';msg=`⚠ OFF PLAN ${S.plan} — only $${Math.max(0,posLeft)} budgeted left at ${p.p}. Overspending here means cutting elsewhere.`;}
+  else if(bid>Math.round(valueMax*1.15)){cls='v-warn';msg=`⚠ ABOVE VALUE — worth ~$${valueMax}.`;}
+  else{cls='v-go';msg=`✅ IN RANGE — good to $${Math.min(valueMax,hard)}${(needExact||needFlex)?' (fills a need)':''}`;}
+  vd.className='verdict '+cls;vd.textContent=msg;vd.style.display='block';
+}
+// ---- import ----
+function applyImport(j){
+  const teams=j.teams||[];const my=(S.myteam||'').toLowerCase();
+  const all=[];const gone=[];const mine=[];
+  teams.forEach(t=>{const isMe=(t.owner||'').toLowerCase().includes(my)||my.includes((t.owner||'').toLowerCase());
+    (t.picks||[]).forEach(pk=>{const rec={n:pk.n,p:pk.p,price:+pk.price||0,keeper:!!pk.keeper};all.push(rec);
+      if(isMe)mine.push({n:pk.n,p:pk.p,price:rec.price,keeper:rec.keeper});else gone.push({n:pk.n,price:rec.price});});});
+  S.espn={teams,all,ts:Date.now()};
+  if(mine.length){S.picks=mine;}
+  // mark gone (union with any manual), dedup by name not on my team
+  const mineNames=new Set(S.picks.map(x=>x.n));
+  const gm={};gone.forEach(g=>{if(!mineNames.has(g.n))gm[g.n]=g;});
+  S.gone=Object.values(gm);
+  document.getElementById('impMsg').textContent=`imported ${all.length} picks, ${teams.length} teams`;
+  render();
+}
+function doImport(){
+  let j;try{j=JSON.parse(document.getElementById('imp').value)}catch(e){document.getElementById('impMsg').textContent='bad JSON';return;}
+  applyImport(j);document.getElementById('imp').value='';
+}
+// one-click path: draft JSON arrives in the URL hash (#gg=...) from the "Sync + Open" bookmarklet
+function checkHash(){try{const m=(location.hash||'').match(/gg=([^&]+)/);if(!m)return;
+  const j=JSON.parse(decodeURIComponent(m[1]));applyImport(j);
+  document.getElementById('impMsg').textContent='✓ auto-synced from ESPN ('+new Date().toLocaleTimeString()+')';
+  history.replaceState(null,'',location.pathname+location.search);}catch(e){document.getElementById('impMsg').textContent='auto-sync error: '+e;}}
+window.addEventListener('hashchange',checkHash);
+document.getElementById('doImport').onclick=doImport;
+document.getElementById('clipImport').onclick=async()=>{try{const t=await navigator.clipboard.readText();if(!t||t.indexOf('teams')<0){document.getElementById('impMsg').textContent='clipboard has no draft — click the ESPN bookmark first';return;}document.getElementById('imp').value=t;doImport();}catch(e){document.getElementById('impMsg').textContent='clipboard blocked by browser — paste into the box and hit Import';}};
+document.getElementById('loadDemo').onclick=()=>{document.getElementById('imp').value=JSON.stringify(DEMO);document.getElementById('myteam').value='IanP123';S.myteam='IanP123';doImport();document.getElementById('impMsg').textContent='demo loaded — try the board & competition panel, then Reset when done';};
+document.getElementById('won').onclick=()=>{const p=currentPlayer();if(!p)return;const price=+document.getElementById('bid').value||0;
+  if(price>maxBidNow()&&!confirm('Over your affordability cap — buy anyway?'))return;
+  S.picks.push({n:p.n,p:p.p,price});clearBlock();render();};
+document.getElementById('lost').onclick=()=>{const p=currentPlayer();if(!p)return;S.gone.push({n:p.n,price:+document.getElementById('bid').value||0});clearBlock();render();};
+function clearBlock(){document.getElementById('search').value='';document.getElementById('bid').value=1;}
+document.getElementById('search').oninput=renderVerdict;
+document.getElementById('bid').oninput=renderVerdict;
+document.getElementById('budget').onchange=e=>{S.budget=+e.target.value||200;render();};
+document.getElementById('plan').onchange=e=>{S.plan=e.target.value;render();};
+document.getElementById('myteam').onchange=e=>{S.myteam=e.target.value;render();};
+document.getElementById('hidegone').onchange=renderBoard;
+document.getElementById('reset').onclick=()=>{if(confirm('Reset the whole draft?')){S={budget:+document.getElementById('budget').value||200,plan:document.getElementById('plan').value,myteam:document.getElementById('myteam').value,picks:[{n:'Puka Nacua',p:'WR',price:58}],gone:[],espn:null};render();}};
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{filt=b.dataset.f;document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderBoard();});
+document.querySelectorAll('#board th[data-s]').forEach(th=>th.onclick=()=>{const k=th.dataset.s;if(sortKey===k)sortAsc=!sortAsc;else{sortKey=k;sortAsc=(k==='n'||k==='p');}renderBoard();});
+// wire the draggable bookmarklet button to the actual code (avoids manual escaping)
+try{var _bm=document.getElementById('bmsrc').textContent.trim();document.getElementById('bmlink').href=_bm;document.getElementById('bm').textContent=_bm;}catch(e){}
+try{var _bm2=document.getElementById('bmsrc2').textContent.trim();document.getElementById('bmlink2').href=_bm2;}catch(e){}
+render();checkHash();
+// LIVE SYNC: when served from the local server (localhost), poll it for the latest draft.
+// Click the ⚡ bookmark once on ESPN and this tab updates itself within a few seconds — no other clicks.
+if(location.protocol==='http:'){
+  let lastSig='';
+  document.getElementById('impMsg').textContent='live sync ready — click ⚡ GG Live Sync on your ESPN tab';
+  setInterval(async()=>{try{const r=await fetch('/draft',{cache:'no-store'});if(!r.ok)return;const j=await r.json();
+    if(j&&j.teams){const sig=JSON.stringify(j).length+':'+j.teams.reduce((a,t)=>a+((t.picks||[]).length),0);
+      if(sig!==lastSig){lastSig=sig;applyImport(j);document.getElementById('impMsg').textContent='⚡ live-synced '+new Date().toLocaleTimeString();}}
+  }catch(e){}},3000);
+}
+</script></body></html>

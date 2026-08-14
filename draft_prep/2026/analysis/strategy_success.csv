@@ -1,0 +1,15 @@
+phase,finding,effect (corr w/ wins or group result),takeaway
+DRAFT,RB spend share,+0.32 (best predictor); RB-lean 7.4W/5.9 vs WR-lean 6.7W/7.0,Spend on RB
+DRAFT,WR spend share,-0.14,WR-heavy builds lag
+DRAFT,TE spend share,-0.28,Never pay up for TE
+DRAFT,QB spend share,-0.12,QB is cheap in 1-QB; don't overspend
+DRAFT,stars-and-scrubs vs balanced,~0 (6.9 vs 7.1 wins),Paying for studs per se doesn't matter - position does
+DRAFT,champions 2023-25,"all 3 RB-lean (RB 44-60%), minimal TE",Title recipe = RB-forward
+FAAB,volume / # claims,+0.30 (auction era); hi-vol 7.3W vs lo 6.8W,Be active on the wire
+FAAB,avg bid / aggression,-0.13,Big splashes don't beat disciplined churn
+FAAB,RB share of FAAB spend,-0.16 (RB-focused 6.7W/7.3 vs 7.3W/5.7),Heavy RB-FAAB = distress signal; nail RB in draft
+FAAB,timing: late-season spend,+0.23 (strongest FAAB signal),Save budget for the Wk10-14 push; field over-spends early
+TRADE,trade count,+0.19; active 7.1W vs quiet 6.9W,Volume weak; contenders trade ~2x more (quality drives it)
+COMBINED,RB-draft + active FAAB,8.1 wins / 4.8 rank (best of 2x2),The winning combo: draft RB AND work the wire
+COMBINED,playoff vs missed teams,"RB43/WR44, 7.6 claims, 2.8 trades  vs  39/47, 6.0, 1.4",Contenders manage more actively across the board
+CAVEAT,sample size,"3 auction yrs, n=36 (draft) / 58-60 (faab/trade)","Directional, not gospel; in-season variance is large"
