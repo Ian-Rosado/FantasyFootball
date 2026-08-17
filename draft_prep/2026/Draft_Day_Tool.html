@@ -42,6 +42,13 @@ a.link{color:var(--blue);cursor:pointer}
 .brow{display:grid;grid-template-columns:44px 1fr 92px;gap:8px;align-items:center;margin-bottom:6px;font-size:13px}
 .comp td{font-size:13px}
 .hot{color:var(--red);font-weight:700}.cool{color:var(--green)}
+.tierboard{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.tb{margin:7px 0}
+.tbrow{display:flex;flex-wrap:wrap;gap:4px 5px;align-items:baseline;margin:3px 0}
+.tl{min-width:70px;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+.tl.elite{color:#ffd27a}.tl.mid{color:#a9d6ff}.tl.value{color:var(--dim)}
+.tp{background:#0c141c;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12px;white-space:nowrap}
+.tp.un{opacity:.4}
 code{background:#0c141c;border:1px solid var(--line);border-radius:6px;padding:2px 5px;font-size:11px;word-break:break-all;display:block;white-space:pre-wrap;max-height:120px;overflow:auto}
 @media(max-width:900px){.grid,.grid3{grid-template-columns:1fr}.dash{grid-template-columns:repeat(2,1fr)}}
 </style></head>
@@ -283,10 +290,23 @@ function renderComp(){
     const tierCell=`<span class="${tierScarce?'hot':''}">${aff} ${T}</span> <span class="small">→ ${nextCnt} ${nextT}</span>`;
     return `<tr><td><span class="pill ${pos}">${pos}</span></td><td class="num ${hotN}">${nNeed}</td><td>${best?best.n+' <b>$'+proj+'</b>':'—'}</td><td>${tierCell}</td><td class="num">$${myLeft}</td><td>${read}</td></tr>`;
   }).join('');
+  // tier board: for each position, the top-2 still-populated tiers with projected prices
+  const tierBoard=['RB','WR','TE','QB'].map(pos=>{
+    const dem=posDemand(pos);const byT={};
+    PLAYERS.forEach(p=>{if(p.p===pos&&p._tier!=='bench'&&status(p.n)==='avail')(byT[p._tier]=byT[p._tier]||[]).push(p);});
+    const show=TORDER.filter(t=>t!=='bench'&&(byT[t]||[]).length).slice(0,2);
+    const head=`<span class="pill ${pos}">${pos}</span>`;
+    if(!show.length)return `<div class="tb">${head} <span class="small">pool exhausted</span></div>`;
+    const myTier=PTIER[S.plan][pos];
+    const blocks=show.map(t=>{const arr=byT[t].sort((a,b)=>b.f-a.f);
+      const chips=arr.slice(0,8).map(p=>{const pr=Math.max(1,Math.round(p.f*inf*dem));return `<span class="tp${pr<=cap?'':' un'}">${p.n} $${pr}</span>`;}).join('');
+      const more=arr.length>8?` <span class="small">+${arr.length-8} more</span>`:'';
+      return `<div class="tbrow"><span class="tl ${t}">${t}${t===myTier?' ◄':''}</span>${chips}${more}</div>`;}).join('');
+    return `<div class="tb">${head}${blocks}</div>`;}).join('');
   el.innerHTML=`<table class="comp"><thead><tr><th>pos</th><th class="num">need</th><th>best left (proj $)</th><th>your tier left (afford)</th><th class="num">your $ left</th><th>read</th></tr></thead><tbody>${rows}</tbody></table>
     <div class="small" style="margin-top:6px">${behindList.length?`<span class="hot">Falling behind at: ${behindList.join(', ')}.</span> Best one left costs more than your plan budget, 3+ richer teams need it, or your tier is empty — bid now or drop a tier.`:`Positions you still need are within budget. Hold the plan.`}</div>
     ${dryList.length?`<div class="small"><span class="hot">Running low in-tier:</span> ${dryList.join(', ')} — grab one before it drops to ${'the next tier'}.</div>`:''}
-    <div class="small" style="margin-top:4px">"your tier left" = affordable (≤ $${cap} now) players still on the board in Plan ${S.plan}'s target tier for that spot, then how many in the tier below. Tiers by fair value: elite / mid / value / bench. proj $ includes live inflation (${inf.toFixed(2)}×) + demand.</div>`;
+    <div class="tierboard">${tierBoard}<div class="small" style="margin-top:6px">Top 2 live tiers per position · price = projected clearing (fair × ${inf.toFixed(2)}× inflation × demand) · <span style="opacity:.4">dimmed</span> = over your $${cap} cap · ◄ your Plan ${S.plan} target tier</div></div>`;
 }
 let filt='ALL',sortKey='f',sortAsc=false;
 function buildDatalist(){document.getElementById('dl').innerHTML=PLAYERS.filter(p=>status(p.n)==='avail').map(p=>`<option value="${p.n}">`).join('');}
