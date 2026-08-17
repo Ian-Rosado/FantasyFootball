@@ -35,7 +35,7 @@ SimonMiller=Simon, Joles=Joles, zach_montoya=Zach, levp=Peter.
 ## Draft Day Tool — architecture
 Single HTML file, vanilla JS, state persisted in `localStorage` key `gg_draft_2026_v2`.
 Key modules (all in the one `<script>`):
-- **Value model:** each player has `f` (fair $, VOR on ESPN 2026 projections scaled to the $2400 pool), `lp` (league-adjusted price), `e` (raw ESPN auction value), `k` (predicted keeper owner). Embedded `PLAYERS` array (300 players) — regenerated yearly from `player_values_2026.csv` / `_players.js`.
+- **Value model:** each player has `f` (fair $), `lp` (league-adjusted price), `e` (raw ESPN auction value), `k` (predicted keeper owner). Embedded `PLAYERS` array (300 players). **`f` is now a market blend** (mean of ESPN + external sites, currently FFToday) — `scripts/reblend_values.py`. The old VOR-on-projections `fairValue` ran ~15-20% hot vs. the real auction (the league bleeds budget into $1-sleeper overpays, draining the stud tier), so raw VOR was replaced with the blend. VOR `fairValue` is still kept side-by-side in `league_adjusted_values.csv` for reference.
 - **Plans (`PLANS`):** A RB-Heavy, B Two-Stud, C Balanced — per-position $ targets driving the budget bars + guardrails.
 - **Tiers (`SPOOL` / `TIERCUT` / `PTIER`):** starter pool per position (QB12/RB30/WR40/TE12), split into elite/mid/value. RB elite tightened to top 7 (`TIERCUT`). Each plan shops a tier per position (`PTIER`). These are plain constants — tune freely.
 - **Verdict engine (`renderVerdict`):** "on the block" read = value cap ∧ affordability cap; warns on sleeper trap (league overpays $1 fliers ~2.6×), TE/QB overpay, off-plan, above-value.
@@ -60,13 +60,17 @@ Fallbacks if the server isn't running: open the HTML directly + use 📌 copy bo
 - Strategy signals are small-sample (3 auction seasons) — treat as tilts, not laws. `trend_report.md` tracks whether they firm up.
 
 ## 2026 decisions
-- **Keeper: Puka Nacua ($58)** — +18 surplus, highest on the roster (Kenneth Walker +2 is the only other positive). Confirmed after tier re-check.
+- **Keeper: Puka Nacua ($58)** — keep for the locked elite-WR1 certainty, NOT for surplus. The old "+18 surplus" was an artifact of the hot VOR model; at blended market value Puka is ~$55, so keeping is ~break-even (−$3). Re-checked every other rostered player against market — none clears positive (Kenneth Walker −$11, Ja'Marr Chase −$16 at his $70 cost, McLaurin −$15); it's Puka or keep-none. Ian is at a keeper disadvantage: rivals lock real bargains (Simon/JSN +$16, Gerk/Rice +$16, Alec/Olave +$15, Dawkins/Bowers +$12).
 - **Plan:** RB-forward, WR2 efficient, punt QB/TE ($7 TE), save FAAB for the stretch.
 
 ## Annual refresh (see docs/REFRESH_GUIDE.md)
 Append the new season to `source_data/*.csv`, run `scripts/analyze_strategy.py` then
 `scripts/build_wb.py`, re-pull that year's rosters/projections/values, recompute the
-forward-looking prep, and re-inject the tool's `PLAYERS` array.
+forward-looking prep, and re-inject the tool's `PLAYERS` array. Then refresh the
+market blend: pull external auction values into `source_data/auction_values_external.csv`
+(update the `FFTODAY` dict in `scripts/reblend_values.py`) and run
+`scripts/reblend_values.py` — it rewrites the tool's `f`/`lp`, the keeper CSVs, and the
+draft board from the ESPN+external blend.
 
 ## Gotchas / constraints learned
 - Fleaflicker `recordPostseason.rank` is unreliable — derive champions from the `isChampionshipGame` winner instead.
