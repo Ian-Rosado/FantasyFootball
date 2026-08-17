@@ -70,7 +70,9 @@ forward-looking prep, and re-inject the tool's `PLAYERS` array. Then refresh the
 market blend: pull external auction values into `source_data/auction_values_external.csv`
 (update the `FFTODAY` dict in `scripts/reblend_values.py`) and run
 `scripts/reblend_values.py` — it rewrites the tool's `f`/`lp`, the keeper CSVs, and the
-draft board from the ESPN+external blend.
+draft board from the ESPN+external blend. Then hand-retune `analysis/scenarios.csv`
+targets and the tool's `PLANS` position budgets to the new market — and drop any target
+that `predicted_keepers.csv` shows a rival keeping (kept players are off the auction board).
 
 ## Gotchas / constraints learned
 - Fleaflicker `recordPostseason.rank` is unreliable — derive champions from the `isChampionshipGame` winner instead.

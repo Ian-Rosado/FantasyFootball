@@ -1,31 +1,31 @@
 scenario,slot,target,maxBid,note
 A) RB-Heavy (analytics pick),KEEPER (WR),Puka Nacua,58,already kept
-A) RB-Heavy (analytics pick),RB1,De'Von Achane,50,anchor
-A) RB-Heavy (analytics pick),RB2,Kyren Williams,24,2nd real RB (RB-lean = wins)
-A) RB-Heavy (analytics pick),WR2,George Pickens,27,"Puka is WR1, so value WR2"
-A) RB-Heavy (analytics pick),FLEX,D'Andre Swift,15,RB flex - stack the backfield
-A) RB-Heavy (analytics pick),QB,Joe Burrow,10,cheap QB
-A) RB-Heavy (analytics pick),TE,Travis Kelce,7,punt TE (ESPN has ~$2)
+A) RB-Heavy (analytics pick),RB1,Bijan Robinson,56,elite anchor (market ~$56; hot model quoted ~$75)
+A) RB-Heavy (analytics pick),RB2,Cam Skattebo,21,every-week workhorse
+A) RB-Heavy (analytics pick),FLEX,D'Andre Swift,12,RB flex - stack the backfield (RB-lean = wins)
+A) RB-Heavy (analytics pick),WR2,DK Metcalf,10,cheap WR2 (Puka is your WR1)
+A) RB-Heavy (analytics pick),QB,Bo Nix,6,punt QB
+A) RB-Heavy (analytics pick),TE,Travis Kelce,6,punt TE (you roster him; else stream)
 A) RB-Heavy (analytics pick),K,(stream),1,
 A) RB-Heavy (analytics pick),D/ST,(stream),1,
-A) RB-Heavy (analytics pick),BENCH x7,RB/WR upside @ $1,7,keep dry FAAB powder for stretch
+A) RB-Heavy (analytics pick),BENCH x7,RB/WR upside @ $2-5,29,deploy leftover on ceiling fliers; save FAAB for the stretch
 B) Two-Stud Hammer,KEEPER (WR),Puka Nacua,58,already kept
-B) Two-Stud Hammer,RB1,Christian McCaffrey,68,elite anchor (pairs w/ Puka)
-B) Two-Stud Hammer,WR2,Tee Higgins,18,
-B) Two-Stud Hammer,RB2,Bucky Irving,14,
-B) Two-Stud Hammer,QB,Jaxson Dart,9,punt QB
-B) Two-Stud Hammer,TE,George Kittle,7,punt TE
-B) Two-Stud Hammer,FLEX,Tony Pollard,6,
+B) Two-Stud Hammer,RB1,Christian McCaffrey,47,2nd stud alongside Puka (Bijan $56 if he slips)
+B) Two-Stud Hammer,RB2,Bucky Irving,17,
+B) Two-Stud Hammer,WR2,Rome Odunze,12,
+B) Two-Stud Hammer,FLEX,D'Andre Swift,12,
+B) Two-Stud Hammer,QB,Dak Prescott,6,punt QB (you roster him)
+B) Two-Stud Hammer,TE,Hunter Henry,3,stream/punt TE
 B) Two-Stud Hammer,K,(stream),1,
 B) Two-Stud Hammer,D/ST,(stream),1,
-B) Two-Stud Hammer,BENCH x7,fliers $1-4,18,thinner roster - higher ceiling/risk
+B) Two-Stud Hammer,BENCH x7,fliers $3-7,43,thin starters after 2 studs - higher ceiling/risk
 C) Balanced Value Core,KEEPER (WR),Puka Nacua,58,already kept
-C) Balanced Value Core,RB1,Omarion Hampton,44,anchor
-C) Balanced Value Core,WR2,A.J. Brown,31,strong WR2
-C) Balanced Value Core,RB2,Quinshon Judkins,21,
-C) Balanced Value Core,QB,Lamar Jackson,18,pay up slightly for elite QB
-C) Balanced Value Core,TE,Sam LaPorta,12,mid TE
-C) Balanced Value Core,FLEX,Rhamondre Stevenson,7,
+C) Balanced Value Core,RB1,Omarion Hampton,32,mid anchor
+C) Balanced Value Core,RB2,Kyren Williams,23,
+C) Balanced Value Core,WR2,Nico Collins,28,strong WR2
+C) Balanced Value Core,FLEX,Quinshon Judkins,15,
+C) Balanced Value Core,QB,Lamar Jackson,14,pay up slightly for elite QB
+C) Balanced Value Core,TE,Tyler Warren,13,mid TE
 C) Balanced Value Core,K,(stream),1,
 C) Balanced Value Core,D/ST,(stream),1,
-C) Balanced Value Core,BENCH x7,value @ $1,7,
+C) Balanced Value Core,BENCH x7,value @ $1-3,15,fuller starting lineup - thinner bench
