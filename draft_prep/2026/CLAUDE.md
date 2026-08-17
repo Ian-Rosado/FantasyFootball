@@ -1,0 +1,91 @@
+# CLAUDE.md — Gridiron Grind Draft Prep (2026)
+
+Project context for Claude Code. This folder holds the data, analysis, and the live
+draft-day tool for Ian's long-running fantasy football league ("Gridiron Grind").
+
+## What this project is
+Ian is a manager in a 12-team, full-PPR **auction** keeper league. Each year he does
+heavy pre-draft prep by hand. This project automates it: pull all league history, build
+an analysis workbook + value model, and provide a **live draft-day dashboard** that keeps
+him on plan during the auction (he tends to go off-script mid-draft).
+
+- **League format:** 12 teams, full PPR. Starters: QB, 2×RB, 2×WR, TE, FLEX(RB/WR/TE), K, D/ST. 16 roster spots. **$200 auction** budget.
+- **Keepers:** ONE keeper in 2026 (was two in prior years). Keeper cost = last year's price **+ $7**. Waiver-wire players cost **$1** base (then +$7 if kept). Confirm keeper count each year.
+- **Platforms:** League history/scoring/FAAB/trades live on **Fleaflicker** (league `78455`, public JSON API). The auction draft + projections/values live on **ESPN** (league `216270753`, needs login). League moved to ESPN auction in 2023.
+
+## Owner map (keep in sync)
+Fleaflicker handle -> name: BurrowingMule=Derek, Ryan505=Ryan, Brotesk=Alec, Iyano1911=Ian,
+rickbraaten=Rick, Chance145=Chance, ajg21=Andy, madmax101010=Dawkins, JGERK=Gerk,
+SimonMiller=Simon, Joles=Joles, zach_montoya=Zach, levp=Peter.
+**ESPN display names differ** — Ian is `IanP123` (teamId 12). The draft-day tool matches
+"my team" by substring against the ESPN display name, so it must be an ESPN name.
+
+## Repo layout (draft_prep/2026/)
+- `Draft_Day_Tool.html` — the live auction dashboard (single self-contained file). **Main deliverable.**
+- `serve_draft.py` — tiny local server: serves the tool + relays the live draft (POST/GET `/draft`, CORS-open).
+- `Start_Draft_Tool.bat` — double-click launcher: starts the server via Ian's venv Python and opens the tool. **PYEXE is hard-coded** to `C:\Users\nai19\Documents\GitHub\venv_ianrosadodotcom\Scripts\python.exe` (update if the venv moves).
+- `source_data/` — raw inputs: standings, draft (snake 2013-22), espn_draft (auction 2023-25 w/ bid+keeper), faab_claims (2021-25), trades, current_rosters, proj_hist, player_values_2026.
+- `analysis/` — derived outputs: champions, manager_alltime, luck_*, h2h_matrix, trades_bymanager, faab_by_manager, keeper_analysis, predicted_keepers, league_adjusted_values, draft_board_2026, overunderpay, strategy_success, scenarios, and `trend_report.md`.
+- `scripts/analyze_strategy.py` — recomputes strategy correlations + over/underpay by tier, writes `trend_report.md`. Re-run yearly.
+- `scripts/build_wb.py` — rebuilds `Gridiron_Grind_History.xlsx` (21 tabs).
+- `Gridiron_Grind_History.xlsx` — the full history workbook (generated artifact).
+- `docs/FINDINGS_SUMMARY.md` — plain-language takeaways w/ confidence tags.
+- `docs/REFRESH_GUIDE.md` — step-by-step to add a new season and re-run everything.
+
+## Draft Day Tool — architecture
+Single HTML file, vanilla JS, state persisted in `localStorage` key `gg_draft_2026_v2`.
+Key modules (all in the one `<script>`):
+- **Value model:** each player has `f` (fair $, VOR on ESPN 2026 projections scaled to the $2400 pool), `lp` (league-adjusted price), `e` (raw ESPN auction value), `k` (predicted keeper owner). Embedded `PLAYERS` array (300 players) — regenerated yearly from `player_values_2026.csv` / `_players.js`.
+- **Plans (`PLANS`):** A RB-Heavy, B Two-Stud, C Balanced — per-position $ targets driving the budget bars + guardrails.
+- **Tiers (`SPOOL` / `TIERCUT` / `PTIER`):** starter pool per position (QB12/RB30/WR40/TE12), split into elite/mid/value. RB elite tightened to top 7 (`TIERCUT`). Each plan shops a tier per position (`PTIER`). These are plain constants — tune freely.
+- **Verdict engine (`renderVerdict`):** "on the block" read = value cap ∧ affordability cap; warns on sleeper trap (league overpays $1 fliers ~2.6×), TE/QB overpay, off-plan, above-value.
+- **Competition panel (`renderComp`):** per position — teams still needing it, projected clearing price of best player left (fair × live inflation × demand), how many of YOUR plan-tier remain affordable (+ count in next tier down), and a "behind?" read.
+- **Live sync:** three input paths, most-to-least automated:
+  1. **⚡ GG Live Sync** bookmarklet — click **once at the start** of the ESPN draft. It hooks the live draft **websocket** and POSTs each sale to `http://localhost:8000/draft` as it happens; the tool polls `/draft` every 3s and auto-imports (only when served over http, i.e. launched via Start_Draft_Tool). Zero further clicks.
+  2. **📌 GG Draft Sync** bookmarklet (no-server fallback) — arms the same websocket feed; each click copies the picks-so-far to the clipboard for the **📋 Import from clipboard** button.
+  3. Manual paste box, or type player+price and Won/Lost.
+  - **How the live feed works (learned Aug 2026, verified in a mock):** during a live auction ESPN's REST `mDraftDetail`/roster endpoints stay EMPTY — picks stream over `wss://fantasydraft.espn.com/game-1/league-<id>/JOIN` as space-delimited text. The event that matters is `SOLD <teamId> <playerId> <?> <price> <?>` (teamId is the real ESPN teamId — NOT the draft-slot column number; price is field #4). Bookmarklets dual-hook `WebSocket` (constructor override for reconnects + `send` patch for the current socket), map `teamId`→owner via `?view=mTeam` and `playerId`→name via `?view=kona_player_info`, accumulate, and emit the `{teams:[{owner,picks:[{n,p,price,keeper}]}]}` shape the tool imports. Anything sold before you click is missed → click early, type early picks by hand.
+
+## How to run (draft day)
+1. Double-click `Start_Draft_Tool.bat` → server window (keep OPEN) + browser opens `http://localhost:8000/Draft_Day_Tool.html`.
+2. Drag **⚡ GG Live Sync** to the bookmarks bar (one time — re-drag if the tool's bookmarklet code changed).
+3. Set Plan + confirm keeper (Puka pre-loaded $58). Click ⚡ **once, right when the ESPN draft room opens** — from then on every sale flows in automatically; keep the ESPN tab open.
+Fallbacks if the server isn't running: open the HTML directly + use 📌 copy bookmark (click to refresh) + 📋 Import from clipboard, or manual entry.
+
+## Key findings (see docs/FINDINGS_SUMMARY.md for detail + confidence tags)
+- Draft **RB** is the best (weak) predictor of wins (r≈+0.32, n=36); paying up for TE/QB hurts.
+- League **overpays $1 sleepers ~2.6×**, pays ~fair for studs, slight discount mid-tier → mid-tier is the value zone.
+- **TE has the SMALLEST** elite-to-replacement drop-off; the real cliff is RB/WR (debunks the "TE premium" instinct).
+- Save FAAB for late; volume > big splashes.
+- Strategy signals are small-sample (3 auction seasons) — treat as tilts, not laws. `trend_report.md` tracks whether they firm up.
+
+## 2026 decisions
+- **Keeper: Puka Nacua ($58)** — +18 surplus, highest on the roster (Kenneth Walker +2 is the only other positive). Confirmed after tier re-check.
+- **Plan:** RB-forward, WR2 efficient, punt QB/TE ($7 TE), save FAAB for the stretch.
+
+## Annual refresh (see docs/REFRESH_GUIDE.md)
+Append the new season to `source_data/*.csv`, run `scripts/analyze_strategy.py` then
+`scripts/build_wb.py`, re-pull that year's rosters/projections/values, recompute the
+forward-looking prep, and re-inject the tool's `PLAYERS` array.
+
+## Gotchas / constraints learned
+- Fleaflicker `recordPostseason.rank` is unreliable — derive champions from the `isChampionshipGame` winner instead.
+- ESPN preseason `auctionValueAverage` is deflated — primary value model is VOR-on-projections; ESPN `e` kept side-by-side only.
+- Browsers **block a web page from opening a local file**, so the tool must be served (localhost) for true one-click; the `file://` "open" bookmarklet was abandoned.
+- Windows `py`/`python` are often the **Microsoft Store stub** — the launcher points straight at the venv python to avoid it.
+- ESPN **live auctions are NOT exposed via the read API** — `mDraftDetail.picks` and rosters stay empty until the draft finalizes; live picks come only over the draft websocket (see Live sync above). REST is still fine for a post-draft record.
+- ESPN `players_wl` returns an inconsistent page size (saw 50 vs 11,610) and ignores the `filterIds` header; use `?view=kona_player_info` for a stable full player map, and expect rate-limiting under rapid calls.
+- Opening the ESPN draft in a **second/duplicate tab** demotes it — the shadow tab's websocket goes stale even though the DOM keeps updating. Test live sync in a single tab.
+- `git` could not run from the sandbox (no access to the repo's `.git` + no user creds) — commits/PRs happen on Ian's machine.
+
+## Next steps / backlog
+- [x] **Live sync working (Aug 2026)** — rebuilt ⚡/📌 on the draft websocket (`SOLD` events) after confirming REST is empty mid-draft; verified pick/team/price decode against a live mock. Still TODO: confirm end-to-end POST reaches the running server on Ian's drafting laptop, and check keeper (Puka) vs the pre-loaded $58 keeper.
+- [ ] **Draft-night opening statement** — a fun, data-driven trash-talk/storyline doc (rivalry H2H, luck, best/worst FAAB picks). Deferred repeatedly; still wanted.
+- [ ] Tune tiers after live use (`SPOOL`/`TIERCUT`/`PTIER`) if elite/mid lines feel off.
+- [ ] Optional: script the ESPN/Fleaflicker pulls into `scripts/` so the yearly refresh is one command (currently browser-driven).
+- [ ] Consider auto-refresh of `PLAYERS` from `player_values_2026.csv` at server start (so the tool never drifts from the data).
+- [ ] After the 2026 season, add it to the CSVs and watch whether the RB-draft / late-FAAB / sleeper-overpay signals hold.
+
+## Conventions
+- Full PPR scoring; $200 auction; one keeper (2026); keeper cost = last price + $7; waiver base $1.
+- Value units: `f`/`lp`/`e` are dollars. Tiers by fair value. Server port 8000. localStorage key `gg_draft_2026_v2`.
