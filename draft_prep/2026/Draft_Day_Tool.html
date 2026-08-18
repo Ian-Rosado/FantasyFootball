@@ -223,6 +223,12 @@ function posDemand(pos){
     if(cnt<(NEED[pos]||1)&&rem>=3)nNeed++;});
   return Math.min(1.35,1+0.05*Math.max(0,nNeed-3));}
 function posSpend(){const ps={};S.picks.forEach(pk=>ps[pk.p]=(ps[pk.p]||0)+(+pk.price));return ps;}
+// remaining plan budget for a position, rescaled to actual $ left so overspending one
+// position lowers what's left for the others (capped at the plan target; savings show in $ remaining).
+function planLeft(pos){const pl=PLANS[S.plan],ps=posSpend();let sum=0;
+  ['RB','WR','QB','TE','K','D/ST'].forEach(p=>sum+=Math.max(0,(pl.t[p]||0)-(ps[p]||0)));
+  const raw=Math.max(0,(pl.t[pos]||0)-(ps[pos]||0));
+  return sum>0?Math.round(raw*Math.min(1,remaining()/sum)):0;}
 function assign(){const used=SLOTS.map(()=>null);const bench=[];
   S.picks.forEach(pk=>{let slot=-1;for(let i=0;i<SLOTS.length;i++){if(!used[i]&&SLOTS[i]===pk.p){slot=i;break;}}
     if(slot<0&&['RB','WR','TE'].includes(pk.p)){const fi=SLOTS.indexOf('FLEX');if(fi>=0&&!used[fi])slot=fi;}
@@ -247,7 +253,7 @@ function renderBars(){
   ['RB','WR','QB','TE','K','D/ST'].forEach(pos=>{
     const sp=ps[pos]||0,tg=pl.t[pos]||1;const pct=Math.min(100,sp/tg*100);const cls=sp>tg+3?'over':(sp>=tg-1?'done':'');
     if(sp>tg+5)over.push(pos);
-    h+=`<div class="brow"><span class="pill ${pos}">${pos}</span><div class="bar ${cls}"><span style="width:${pct}%"></span></div><span class="small">$${sp} / $${tg}</span></div>`;});
+    h+=`<div class="brow"><span class="pill ${pos}">${pos}</span><div class="bar ${cls}"><span style="width:${pct}%"></span></div><span class="small">$${sp} spent · <b>$${planLeft(pos)} left</b></span></div>`;});
   document.getElementById('bars').innerHTML=h;
   document.getElementById('planNote').innerHTML= over.length?`<span class="hot">Over Plan ${S.plan} at: ${over.join(', ')}.</span> Rebalance — pull back there.`:`On plan. Reminder: RB-forward, punt QB/TE, don't chase $1 fliers.`;
 }
@@ -284,13 +290,16 @@ function renderComp(){
     const tierScarce=aff<=1;
     // my situation
     const myHave=S.picks.filter(p=>p.p===pos).length;const myNeed=myHave<(NEED[pos]||1);
-    const myLeft=Math.max(0,(pl.t[pos]||0)-(ps[pos]||0));
+    const myLeft=planLeft(pos);
     let read;
     if(!myNeed){read='<span class="cool">set ✓</span>';}
-    else{const behind=(proj>Math.max(3,myLeft))||rivalsRicher>=3||aff===0;
-      if(behind){read='<span class="hot">behind — push/downgrade</span>';behindList.push(pos);}
-      else read='<span>in range</span>';
-      if(tierScarce&&aff>0)dryList.push(`${pos} (${aff} ${T} left)`);}
+    else{
+      const rich=rivalsRicher>=3?' · <span class="hot">rivals flush</span>':'';
+      if(aff===0&&nextCnt===0){read='<span class="hot">priced out — bid up or wait for $1s</span>';behindList.push(pos);}
+      else if(aff===0){read=`<span style="color:var(--amber)">no ${T} in budget → drop to ${nextT}</span>`+rich;behindList.push(pos);}
+      else if(aff===1){read=`<span style="color:var(--amber)">last ${T} in budget — grab</span>`+rich;dryList.push(`${pos} (1 ${T} left)`);}
+      else{read=(T==='value')?`<span class="cool">punt — plenty left, wait</span>`+rich:`<span>on track · ${aff} ${T} affordable</span>`+rich;}
+    }
     const hotN=teamsNeed>=7?'hot':(teamsNeed<=2?'cool':'');
     const tierCell=`<span class="${tierScarce?'hot':''}">${aff} ${T}</span> <span class="small">→ ${nextCnt} ${nextT}</span>`;
     return `<tr><td><span class="pill ${pos}">${pos}</span></td><td class="num ${hotN}">${teamsNeed}</td><td class="num">${slotsOpen}</td><td>${best?best.n+' <b>$'+proj+'</b>':'—'}</td><td>${tierCell}</td><td class="num">$${myLeft}</td><td>${read}</td></tr>`;
@@ -308,8 +317,8 @@ function renderComp(){
       const more=arr.length>8?` <span class="small">+${arr.length-8} more</span>`:'';
       return `<div class="tbrow"><span class="tl ${t}">${t}${t===myTier?' ◄':''}</span>${chips}${more}</div>`;}).join('');
     return `<div class="tb">${head}${blocks}</div>`;}).join('');
-  el.innerHTML=`<table class="comp"><thead><tr><th>pos</th><th class="num">tms need</th><th class="num">slots open</th><th>best left (proj $)</th><th>your tier left (afford)</th><th class="num">your $ left</th><th>read</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="small" style="margin-top:6px"><b>tms need</b> = teams still short a starter here · <b>slots open</b> = total unfilled starter slots — both league-wide across all ${NTEAMS} teams (starters only, excl. FLEX). Compare against the tier board / your-tier-left counts.</div>
+  el.innerHTML=`<table class="comp"><thead><tr><th>pos</th><th class="num">tms need</th><th class="num">slots open</th><th>best left (proj $)</th><th>your tier left (afford)</th><th class="num">$ left (adj)</th><th>read</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="small" style="margin-top:6px"><b>tms need</b> = teams still short a starter here · <b>slots open</b> = total unfilled starter slots — both league-wide across all ${NTEAMS} teams (starters only, excl. FLEX). Compare against the tier board / your-tier-left counts. · <b>$ left (adj)</b> = your remaining plan budget for that spot, rescaled to your actual $ left — overspend one position and the rest drop.</div>
     <div class="small" style="margin-top:6px">${behindList.length?`<span class="hot">Falling behind at: ${behindList.join(', ')}.</span> Best one left costs more than your plan budget, 3+ richer teams need it, or your tier is empty — bid now or drop a tier.`:`Positions you still need are within budget. Hold the plan.`}</div>
     ${dryList.length?`<div class="small"><span class="hot">Running low in-tier:</span> ${dryList.join(', ')} — grab one before it drops to ${'the next tier'}.</div>`:''}
     <div class="tierboard">${tierBoard}<div class="small" style="margin-top:6px">Top 2 live tiers per position · price = projected clearing (fair × ${inf.toFixed(2)}× inflation × demand) · <span style="opacity:.4">dimmed</span> = over your $${cap} cap · ◄ your Plan ${S.plan} target tier</div></div>`;
@@ -337,7 +346,7 @@ function renderVerdict(){
   const valueMax=Math.max(1,Math.round(p.f*inf*posDemand(p.p)));const hard=maxBidNow();
   const {used}=assign();const needExact=SLOTS.some((s,i)=>!used[i]&&s===p.p);
   const needFlex=['RB','WR','TE'].includes(p.p)&&SLOTS.some((s,i)=>!used[i]&&s==='FLEX');
-  const pl=PLANS[S.plan];const ps=posSpend();const posLeft=(pl.t[p.p]||0)-(ps[p.p]||0);
+  const pl=PLANS[S.plan];const ps=posSpend();const posLeft=planLeft(p.p);
   info.innerHTML=`<b>${p.n}</b> <span class="pill ${p.p}">${p.p}</span> — fair <b>$${p.f}</b>, league <b>$${p.lp}</b>, ESPN $${p.e}${p.k?` · <span class="kflag">likely kept ${p.k}</span>`:''}
    <div class="reco">value max $${valueMax} · afford cap $${hard} · Plan ${S.plan} ${p.p} budget left $${posLeft} · ${needExact?'fills '+p.p:needFlex?'fills FLEX':'bench/extra'}</div>`;
   let cls='v-go',msg='';
