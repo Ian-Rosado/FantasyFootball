@@ -166,6 +166,36 @@ const DEMO={teams:[
  {owner:'rickbraaten',picks:[{n:'Christian McCaffrey',p:'RB',price:55,keeper:false}]}
 ]};
 const byName={};PLAYERS.forEach(p=>byName[p.n]=p);
+// ---- keepers ----
+// Rivals' kept players: OFF the auction board, but ON their team's roster at their keeper cost.
+// UPDATE this list when keepers lock in. `team` = a substring of that team's ESPN name as it
+// appears in the live sync (so it can be matched to the feed). Set player names to match the board.
+let KEEPERS=[
+  {n:'Puka Nacua',team:'IanP123',cost:58},
+  {n:'Jahmyr Gibbs',team:'Chance',cost:58},
+  {n:'Jaxon Smith-Njigba',team:'Simon',cost:34},
+  {n:'Rashee Rice',team:'Gerk',cost:17},
+  {n:'Chris Olave',team:'Alec',cost:12},
+  {n:'Brock Bowers',team:'Dawkins',cost:17},
+  {n:"De'Von Achane",team:'Derek',cost:41},
+  {n:'George Pickens',team:'Andy',cost:20},
+  {n:'Tetairoa McMillan',team:'Joles',cost:19},
+  {n:'Javonte Williams',team:'Ryan',cost:13},
+  {n:'James Cook III',team:'Zach',cost:33}
+];
+let keptSet=new Set(KEEPERS.map(k=>k.n));
+function teamMatch(owner,kteam){const o=(owner||'').toLowerCase(),k=(kteam||'').toLowerCase();return !!o&&!!k&&(o.includes(k)||k.includes(o));}
+function keeperPick(k){return {n:k.n,p:(byName[k.n]||{}).p||'?',price:k.cost,keeper:true};}
+// normalized 12-team view: each team's synced auction picks + its keeper, plus teams not yet in the feed
+function leagueTeams(){
+  const synced=(S.espn&&S.espn.teams)?S.espn.teams:[];const usedK=new Set();
+  const teams=synced.map(t=>{const picks=t.picks.slice();
+    KEEPERS.forEach(k=>{if(!usedK.has(k.n)&&teamMatch(t.owner,k.team)){usedK.add(k.n);picks.push(keeperPick(k));}});
+    return{owner:t.owner,mine:!!t.mine,picks};});
+  const byTeam={};KEEPERS.forEach(k=>{if(!usedK.has(k.n))(byTeam[k.team]=byTeam[k.team]||[]).push(k);});
+  Object.keys(byTeam).forEach(tm=>{if(teams.length<NTEAMS)teams.push({owner:tm,mine:teamMatch(tm,S.myteam),picks:byTeam[tm].map(keeperPick)});});
+  while(teams.length<NTEAMS)teams.push({owner:'',mine:false,picks:[]});
+  return teams;}
 // ---- tiers ----
 // starter pool per position (12 teams): how many of each get STARTED leaguewide (incl flex share)
 const SPOOL={QB:12,RB:30,WR:40,TE:12,K:12,'D/ST':12};
@@ -186,7 +216,7 @@ let S=load();
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.picks)return s}catch(e){}
   return {budget:200,plan:'A',myteam:'IanP123',picks:[{n:'Puka Nacua',p:'WR',price:58}],gone:[],espn:null};}
 function save(){localStorage.setItem(KEY,JSON.stringify(S));}
-function status(n){if(S.picks.some(x=>x.n===n))return'mine';if(S.gone.some(x=>x.n===n))return'gone';return'avail';}
+function status(n){if(S.picks.some(x=>x.n===n))return'mine';if(S.gone.some(x=>x.n===n))return'gone';if(keptSet.has(n))return'kept';return'avail';}
 function spent(){return S.picks.reduce((a,x)=>a+(+x.price||0),0);}
 function remaining(){return S.budget-spent();}
 function openSpots(){return ROSTER_MAX-S.picks.length;}
@@ -200,13 +230,10 @@ function inflation(){
   // Captures structural inflation from pick 1 (fixes the cold-start "prices look low").
   let forward=1;
   {
-    // sum $ left + open spots over synced teams, then top up for teams not yet in the feed
-    // (a team only appears once it has won a player, so early on several are missing full $200/16 spots)
-    let money=0,spots=0,seen=0;
-    if(S.espn&&S.espn.teams){seen=S.espn.teams.length;
-      S.espn.teams.forEach(t=>{const spent=t.picks.reduce((a,p)=>a+(+p.price||0),0);
-        money+=Math.max(0,S.budget-spent);spots+=Math.max(0,ROSTER_MAX-t.picks.length);});}
-    const missing=Math.max(0,NTEAMS-seen);money+=missing*S.budget;spots+=missing*ROSTER_MAX;
+    // all 12 teams (auction picks + keepers, plus teams not yet in the feed); keepers reduce $ and open spots
+    let money=0,spots=0;
+    leagueTeams().forEach(t=>{const s=t.picks.reduce((a,p)=>a+(+p.price||0),0);
+      money+=Math.max(0,S.budget-s);spots+=Math.max(0,ROSTER_MAX-t.picks.length);});
     if(spots>0){
       const val=PLAYERS.filter(p=>status(p.n)==='avail').sort((a,b)=>b.f-a.f).slice(0,spots).reduce((a,p)=>a+p.f,0);
       if(val>0)forward=money/val;
@@ -216,9 +243,9 @@ function inflation(){
   return{f:f,n:n,realized:realized,forward:forward};}
 // per-position demand premium: rival teams that still NEED this position AND have budget left
 function posDemand(pos){
-  if(!S.espn||!S.espn.teams)return 1;
-  let nNeed=0;
-  S.espn.teams.forEach(t=>{const isMe=t.mine||(t.owner||'').toLowerCase().includes((S.myteam||'').toLowerCase());if(isMe)return;
+  if(!S.espn)return 1;
+  let nNeed=0;const my=(S.myteam||'').toLowerCase();
+  leagueTeams().forEach(t=>{const isMe=t.mine||(!!my&&(t.owner||'').toLowerCase().includes(my));if(isMe)return;
     const cnt=t.picks.filter(p=>p.p===pos).length;const rem=S.budget-t.picks.reduce((a,p)=>a+(+p.price||0),0);
     if(cnt<(NEED[pos]||1)&&rem>=3)nNeed++;});
   return Math.min(1.35,1+0.05*Math.max(0,nNeed-3));}
@@ -262,21 +289,20 @@ function renderComp(){
   if(!S.espn){el.innerHTML='<div class="small">Import the live draft (below) to see who still needs each position, the projected price of the best guy left, and whether you\'re falling behind.</div>';document.getElementById('compAsOf').textContent='';return;}
   document.getElementById('compAsOf').textContent='· '+S.espn.teams.length+' teams synced';
   const inf=inflation().f;const myRem=remaining();const pl=PLANS[S.plan];const ps=posSpend();const cap=maxBidNow();
-  const behindList=[];const dryList=[];
+  const behindList=[];const dryList=[];const LT=leagueTeams();
   const projP=p=>Math.max(1,Math.round(p.f*inf));
   const rows=['RB','WR','QB','TE','D/ST','K'].map(pos=>{
-    // demand across the league
-    let nNeed=0,budg=0,rivalsRicher=0;
-    S.espn.teams.forEach(t=>{
-      const isMe=t.mine||(t.owner||'').toLowerCase().includes((S.myteam||'').toLowerCase());if(isMe)return;
-      const cnt=t.picks.filter(p=>p.p===pos).length;const rem=S.budget-t.picks.reduce((a,p)=>a+(+p.price||0),0);
+    // demand across all 12 teams (auction picks + keepers): teams short a starter, open starter slots,
+    // and rival budgets — keeper cost/roster spot are already baked in since keepers are in each team's picks
+    let nNeed=0,budg=0,rivalsRicher=0,teamsNeed=0,slotsOpen=0;
+    const my=(S.myteam||'').toLowerCase();
+    LT.forEach(t=>{
+      const cnt=t.picks.filter(p=>p.p===pos).length;const open=Math.max(0,(NEED[pos]||1)-cnt);
+      if(open>0)teamsNeed++;slotsOpen+=open;
+      const isMe=t.mine||(!!my&&(t.owner||'').toLowerCase().includes(my));if(isMe)return;
+      const rem=S.budget-t.picks.reduce((a,p)=>a+(+p.price||0),0);
       if(cnt<(NEED[pos]||1)&&rem>=3){nNeed++;budg+=rem;if(rem>myRem)rivalsRicher++;}
     });
-    // league-wide demand: teams still short a starter here, and total unfilled starter slots
-    // (all NTEAMS teams incl. ones not yet in the sync feed; starters only, excl. FLEX)
-    let teamsNeed=0,slotsOpen=0;
-    S.espn.teams.forEach(t=>{const c=t.picks.filter(p=>p.p===pos).length;const open=Math.max(0,(NEED[pos]||1)-c);if(open>0)teamsNeed++;slotsOpen+=open;});
-    const missT=Math.max(0,NTEAMS-S.espn.teams.length);teamsNeed+=missT;slotsOpen+=missT*(NEED[pos]||1);
     // best available + projected clearing price (fair x inflation x demand premium)
     const avail=PLAYERS.filter(p=>p.p===pos&&status(p.n)==='avail'&&p._tier!=='bench').sort((a,b)=>b.f-a.f);
     const best=avail[0];const dem=posDemand(pos);
@@ -332,7 +358,7 @@ function renderBoard(){
   rows.sort((a,b)=>{const d=(a[sortKey]>b[sortKey]?1:a[sortKey]<b[sortKey]?-1:0);return sortAsc?d:-d;});
   document.getElementById('brows').innerHTML=rows.slice(0,220).map(p=>{
     const st=status(p.n);
-    const act= st==='mine'?`<span style="color:var(--green)">✓ mine</span>`:st==='gone'?`<span style="color:var(--red)">gone</span>`:`<button data-pick="${p.n}">pick</button>`;
+    const act= st==='mine'?`<span style="color:var(--green)">✓ mine</span>`:st==='gone'?`<span style="color:var(--red)">gone</span>`:st==='kept'?`<span class="kflag">kept</span>`:`<button data-pick="${p.n}">pick</button>`;
     const kf=p.k?` <span class="kflag">(likely kept: ${p.k})</span>`:'';
     return `<tr style="${st!=='avail'?'opacity:.5':''}"><td>${p.n}${kf}</td><td><span class="pill ${p.p}">${p.p}</span></td><td class="num">${p.f}</td><td class="num">${p.lp}</td><td class="num">${p.e}</td><td>${act}</td></tr>`;
   }).join('');
@@ -367,6 +393,8 @@ function applyImport(j){
       if(isMe)mine.push({n:pk.n,p:pk.p,price:rec.price,keeper:rec.keeper});else gone.push({n:pk.n,price:rec.price});});});
   S.espn={teams,all,ts:Date.now()};
   if(mine.length){S.picks=mine;}
+  // the sync carries auction wins only, so keep my own keeper(s) on my roster
+  KEEPERS.forEach(k=>{if(teamMatch(S.myteam,k.team)&&!S.picks.some(x=>x.n===k.n))S.picks.unshift(keeperPick(k));});
   // mark gone (union with any manual), dedup by name not on my team
   const mineNames=new Set(S.picks.map(x=>x.n));
   const gm={};gone.forEach(g=>{if(!mineNames.has(g.n))gm[g.n]=g;});
