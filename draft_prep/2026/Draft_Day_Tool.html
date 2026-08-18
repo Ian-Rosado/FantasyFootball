@@ -266,6 +266,11 @@ function renderComp(){
       const cnt=t.picks.filter(p=>p.p===pos).length;const rem=S.budget-t.picks.reduce((a,p)=>a+(+p.price||0),0);
       if(cnt<(NEED[pos]||1)&&rem>=3){nNeed++;budg+=rem;if(rem>myRem)rivalsRicher++;}
     });
+    // league-wide demand: teams still short a starter here, and total unfilled starter slots
+    // (all NTEAMS teams incl. ones not yet in the sync feed; starters only, excl. FLEX)
+    let teamsNeed=0,slotsOpen=0;
+    S.espn.teams.forEach(t=>{const c=t.picks.filter(p=>p.p===pos).length;const open=Math.max(0,(NEED[pos]||1)-c);if(open>0)teamsNeed++;slotsOpen+=open;});
+    const missT=Math.max(0,NTEAMS-S.espn.teams.length);teamsNeed+=missT;slotsOpen+=missT*(NEED[pos]||1);
     // best available + projected clearing price (fair x inflation x demand premium)
     const avail=PLAYERS.filter(p=>p.p===pos&&status(p.n)==='avail'&&p._tier!=='bench').sort((a,b)=>b.f-a.f);
     const best=avail[0];const dem=posDemand(pos);
@@ -286,9 +291,9 @@ function renderComp(){
       if(behind){read='<span class="hot">behind — push/downgrade</span>';behindList.push(pos);}
       else read='<span>in range</span>';
       if(tierScarce&&aff>0)dryList.push(`${pos} (${aff} ${T} left)`);}
-    const hotN=nNeed>=6?'hot':(nNeed<=2?'cool':'');
+    const hotN=teamsNeed>=7?'hot':(teamsNeed<=2?'cool':'');
     const tierCell=`<span class="${tierScarce?'hot':''}">${aff} ${T}</span> <span class="small">→ ${nextCnt} ${nextT}</span>`;
-    return `<tr><td><span class="pill ${pos}">${pos}</span></td><td class="num ${hotN}">${nNeed}</td><td>${best?best.n+' <b>$'+proj+'</b>':'—'}</td><td>${tierCell}</td><td class="num">$${myLeft}</td><td>${read}</td></tr>`;
+    return `<tr><td><span class="pill ${pos}">${pos}</span></td><td class="num ${hotN}">${teamsNeed}</td><td class="num">${slotsOpen}</td><td>${best?best.n+' <b>$'+proj+'</b>':'—'}</td><td>${tierCell}</td><td class="num">$${myLeft}</td><td>${read}</td></tr>`;
   }).join('');
   // tier board: for each position, the top-2 still-populated tiers with projected prices
   const tierBoard=['RB','WR','TE','QB'].map(pos=>{
@@ -303,7 +308,8 @@ function renderComp(){
       const more=arr.length>8?` <span class="small">+${arr.length-8} more</span>`:'';
       return `<div class="tbrow"><span class="tl ${t}">${t}${t===myTier?' ◄':''}</span>${chips}${more}</div>`;}).join('');
     return `<div class="tb">${head}${blocks}</div>`;}).join('');
-  el.innerHTML=`<table class="comp"><thead><tr><th>pos</th><th class="num">need</th><th>best left (proj $)</th><th>your tier left (afford)</th><th class="num">your $ left</th><th>read</th></tr></thead><tbody>${rows}</tbody></table>
+  el.innerHTML=`<table class="comp"><thead><tr><th>pos</th><th class="num">tms need</th><th class="num">slots open</th><th>best left (proj $)</th><th>your tier left (afford)</th><th class="num">your $ left</th><th>read</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="small" style="margin-top:6px"><b>tms need</b> = teams still short a starter here · <b>slots open</b> = total unfilled starter slots — both league-wide across all ${NTEAMS} teams (starters only, excl. FLEX). Compare against the tier board / your-tier-left counts.</div>
     <div class="small" style="margin-top:6px">${behindList.length?`<span class="hot">Falling behind at: ${behindList.join(', ')}.</span> Best one left costs more than your plan budget, 3+ richer teams need it, or your tier is empty — bid now or drop a tier.`:`Positions you still need are within budget. Hold the plan.`}</div>
     ${dryList.length?`<div class="small"><span class="hot">Running low in-tier:</span> ${dryList.join(', ')} — grab one before it drops to ${'the next tier'}.</div>`:''}
     <div class="tierboard">${tierBoard}<div class="small" style="margin-top:6px">Top 2 live tiers per position · price = projected clearing (fair × ${inf.toFixed(2)}× inflation × demand) · <span style="opacity:.4">dimmed</span> = over your $${cap} cap · ◄ your Plan ${S.plan} target tier</div></div>`;
