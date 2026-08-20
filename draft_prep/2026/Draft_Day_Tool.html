@@ -28,6 +28,11 @@ td.num,th.num{text-align:right}
 .pill{display:inline-block;min-width:30px;text-align:center;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:700}
 .RB{background:#20492f;color:#8ff0b0}.WR{background:#1c3a55;color:#a9d6ff}.QB{background:#4a2330;color:#ffb3c4}.TE{background:#4a3f1c;color:#ffe08a}.K{background:#33404a;color:#cfe0ee}
 .FLEX{background:#3a3320;color:#e8d9a8}.BENCH{background:#26303a;color:#9fb0c0}
+.advisor{margin:0 0 12px;padding:9px 13px;border-radius:8px;border:1px solid var(--line);background:var(--card);line-height:1.5;font-size:14px}
+.advisor.sw{border-color:var(--red);background:rgba(229,87,63,.13)}
+.advisor.ok{border-color:var(--green);background:rgba(46,204,113,.10)}
+.advisor:empty{display:none}
+.advisor button{margin-left:8px;background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
 .slotrow{display:flex;justify-content:space-between;padding:5px 8px;border-bottom:1px solid var(--line)}
 .slotrow .need{color:var(--amber)}.slotrow .have{color:var(--ink)}
 .tabs button{margin-right:4px;font-size:12px;padding:4px 9px}
@@ -67,6 +72,8 @@ code{background:#0c141c;border:1px solid var(--line);border-radius:6px;padding:2
   <div class="stat"><div class="v" id="slots">–</div><div class="l">slots filled</div></div>
   <div class="stat"><div class="v" id="infl">–</div><div class="l">room inflation</div></div>
 </div>
+
+<div id="advisor" class="advisor"></div>
 
 <div class="grid">
   <div class="card">
@@ -251,6 +258,39 @@ function posDemand(pos){
     const cnt=t.picks.filter(p=>p.p===pos).length;const rem=S.budget-t.picks.reduce((a,p)=>a+(+p.price||0),0);
     if(cnt<(NEED[pos]||1)&&rem>=3)nNeed++;});
   return Math.min(1.35,1+0.05*Math.max(0,nNeed-3));}
+// realized inflation PER POSITION (sold price vs fair) — reads which tier the room is overpaying
+function posInflation(){
+  const src=S.espn?S.espn.all:[...S.picks,...S.gone];const agg={};
+  src.forEach(x=>{const p=byName[x.n];if(p&&x.price!=null&&!x.keeper){const o=agg[p.p]=agg[p.p]||{sp:0,sf:0,n:0};o.sp+=+x.price;o.sf+=p.f;o.n++;}});
+  const r={};for(const pos in agg){const o=agg[pos];r[pos]=(o.n>=3&&o.sf>0)?o.sp/o.sf:null;}
+  return r;}
+// which plan the market favors right now, and why — the live "when to switch" call
+function recommendPlan(){
+  const pi=posInflation(),rb=pi.RB,wr=pi.WR,cap=maxBidNow(),inf=inflation().f;
+  const rbAff=PLAYERS.filter(p=>p.p==='RB'&&(p._tier==='elite'||p._tier==='mid')&&status(p.n)==='avail'&&Math.round(p.f*inf)<=cap).length;
+  const needRB=S.picks.filter(p=>p.p==='RB').length<2;
+  let plan=S.plan,reason='',live=false;
+  if(needRB&&rbAff===0){plan='C';live=true;reason='no elite/mid RB left in your budget — stop chasing, pivot to WR + RB volume.';}
+  else if(rb!=null&&wr!=null){
+    if(rb-wr>=0.15&&rb>=1.15){plan='C';live=true;reason=`RBs clearing ${rb.toFixed(2)}× fair vs WR ${wr.toFixed(2)}× — the RB tier is overpriced. Let elite RBs go; load WR + RB volume.`;}
+    else if(wr-rb>=0.15&&wr>=1.15){plan='A';live=true;reason=`WRs ${wr.toFixed(2)}× vs RB ${rb.toFixed(2)}× — RB is the value. Hammer RB.`;}
+    else reason=`RB ${rb.toFixed(2)}× · WR ${wr.toFixed(2)}× — market's balanced, hold your plan.`;}
+  else if(rb!=null){
+    if(rb>=1.3){plan='C';live=true;reason=`RBs clearing ${rb.toFixed(2)}× fair — overpriced. Pivot to balanced.`;}
+    else if(rb<=1.05){plan='A';reason=`RBs going ${rb.toFixed(2)}× fair — cheap. Go RB-heavy.`;}
+    else reason=`RB ${rb.toFixed(2)}× fair — normal, hold.`;}
+  else reason='waiting on a few RB/WR sales to read the market…';
+  return {plan,reason,live,rb,wr,rbAff};}
+function renderAdvisor(){
+  const el=document.getElementById('advisor');if(!el)return;
+  const rec=recommendPlan(),cur=S.plan,fmt=x=>x==null?'—':x.toFixed(2)+'×';
+  const meter=`<div class="small" style="margin-top:4px">market: RB ${fmt(rec.rb)} · WR ${fmt(rec.wr)} · elite/mid RB you can afford: ${rec.rbAff}</div>`;
+  let cls='',body;
+  if(rec.plan!==cur&&rec.live){cls='sw';body=`⚠ <b>SWITCH → Plan ${rec.plan}</b> (you're on ${cur}). ${rec.reason} <button id="advSwitch" data-p="${rec.plan}">Switch to ${rec.plan}</button>`;}
+  else if(rec.rb!=null||rec.rbAff===0){cls='ok';body=`✓ <b>Plan ${cur} still fits.</b> ${rec.reason}`;}
+  else body=`<b>Strategy watch:</b> ${rec.reason}`;
+  el.className='advisor '+cls;el.innerHTML=`<div>${body}</div>${meter}`;
+  const b=document.getElementById('advSwitch');if(b)b.onclick=()=>{S.plan=b.dataset.p;render();};}
 function posSpend(){const ps={};S.picks.forEach(pk=>ps[pk.p]=(ps[pk.p]||0)+(+pk.price));return ps;}
 // disjoint spend by lineup slot: 2 RB + 2 WR starters, QB, TE, the FLEX player, K, D/ST, and BENCH (the rest)
 const BUDCATS=['QB','RB','WR','TE','FLEX','K','D/ST','BENCH'];
@@ -279,7 +319,7 @@ function render(){
   SLOTS.forEach((s,i)=>{const pk=used[i];h+=`<div class="slotrow"><span>${s}</span>`+(pk?`<span class="have">${pk.n} <b>$${pk.price}</b></span>`:`<span class="need">— open —</span>`)+`</div>`;});
   h+=`<div class="slotrow" style="border-top:1px dashed var(--line)"><span>BENCH (${bench.length})</span><span class="have">${bench.map(b=>b.n+' $'+b.price).join(', ')||'—'}</span></div>`;
   document.getElementById('roster').innerHTML=h;
-  renderBars();renderComp();renderBoard();renderVerdict();buildDatalist();save();
+  renderBars();renderComp();renderBoard();renderVerdict();renderAdvisor();buildDatalist();save();
 }
 function renderBars(){
   const pl=PLANS[S.plan];document.getElementById('planName').textContent='('+pl.name+')';
