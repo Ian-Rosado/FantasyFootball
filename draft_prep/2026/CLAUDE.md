@@ -28,6 +28,8 @@ SimonMiller=Simon, Joles=Joles, zach_montoya=Zach, levp=Peter.
 - `analysis/` — derived outputs: champions, manager_alltime, luck_*, h2h_matrix, trades_bymanager, faab_by_manager, keeper_analysis, predicted_keepers, league_adjusted_values, draft_board_2026, overunderpay, strategy_success, scenarios, and `trend_report.md`.
 - `scripts/analyze_strategy.py` — recomputes strategy correlations + over/underpay by tier, writes `trend_report.md`. Re-run yearly.
 - `scripts/build_wb.py` — rebuilds `Gridiron_Grind_History.xlsx` (21 tabs).
+- `scripts/waiver_bids.py` — **in-season** waiver helper: pulls the live Fleaflicker free-agent pool + each team's roster needs + every manager's historical FAAB tendencies (from `faab_claims.csv`) so you can size bids. `python waiver_bids.py [--top 40]`.
+- `scripts/defense_streaming.py` — **in-season** D/ST streamer: lists available defenses + this week's matchup + ownership, flagging sack/turnover-prone opponents (this league scores no points/yards allowed — stream for sacks + takeaways + defensive TDs). Multi-week planning needs the NFL schedule (the API exposes only the current week). Both use the public Fleaflicker API (std-lib only) and rate-limit on rapid repeat runs — wait a minute if you get the "API unavailable" message.
 - `Gridiron_Grind_History.xlsx` — the full history workbook (generated artifact).
 - `docs/FINDINGS_SUMMARY.md` — plain-language takeaways w/ confidence tags.
 - `docs/REFRESH_GUIDE.md` — step-by-step to add a new season and re-run everything.
