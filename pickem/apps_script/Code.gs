@@ -40,6 +40,10 @@ var CONFIG = {
     "SUPER-PICKS throughout the regular season."
 };
 
+// Shown in every pick dropdown so a required pick can be left as "no pick"
+// (late entries, or games that already kicked off). Scored as 0.
+var NO_PICK_LABEL = 'No pick';
+
 // Script Property keys (persist state between runs).
 var PROP_FORM_ID = 'PICKEM_FORM_ID';
 var PROP_PICK_ITEM_IDS = 'PICKEM_PICK_ITEM_IDS';
@@ -152,6 +156,8 @@ function buildBetOptions_(games) {
       missing.push(matchup);
     }
   }
+  // Always offer a "No pick" out, for late entries or games already started.
+  options.push(NO_PICK_LABEL);
   return { options: options, missing: missing };
 }
 
@@ -299,9 +305,10 @@ function installSubmitTrigger_(ss) {
 }
 
 /**
- * On each submission, write the form's current week into a "Week" column on the
- * new response row. The week comes from Script Properties (set by updateWeek),
- * never from the respondent — so it's always correct.
+ * On each submission: (1) stamp the form's current week into a "Week" column on
+ * the new response row (week comes from Script Properties, never the respondent,
+ * so it's always correct), and (2) email the respondent a confirmation listing
+ * their picks so they know it registered and can remember what they chose.
  */
 function onFormSubmitSheet(e) {
   var sheet = e.range.getSheet();
@@ -316,6 +323,37 @@ function onFormSubmitSheet(e) {
     sheet.getRange(1, col).setValue('Week');
   }
   sheet.getRange(row, col).setValue(week);
+
+  sendConfirmation_(headers, sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0], week);
+}
+
+/**
+ * Email the respondent a copy of their submission. Finds their address in the
+ * auto-collected "Email address" column; skips (with a log) if it's missing.
+ */
+function sendConfirmation_(headers, rowVals, week) {
+  var email = null;
+  var pairs = [];
+  for (var i = 0; i < headers.length; i++) {
+    var h = String(headers[i]).trim();
+    var v = rowVals[i];
+    if (/email/i.test(h) && !email && v) { email = String(v).trim(); continue; }
+    if (h === 'Timestamp' || h === 'Week' || v === '' || v == null) continue;
+    pairs.push(h + ': ' + v);
+  }
+  if (!email) {
+    Logger.log('No respondent email found on row; skipping confirmation.');
+    return;
+  }
+
+  var subject = 'Your Week ' + week + ' Pick’em picks are in';
+  var body =
+    'Thanks — your Week ' + week + ' picks are registered. Here’s what we got:\n\n' +
+    pairs.join('\n') +
+    '\n\nNeed to change a pick? Submit the form again before kickoff — your most ' +
+    'recent submission is the one that counts. Good luck!';
+  MailApp.sendEmail({ to: email, subject: subject, body: body });
+  Logger.log('Confirmation sent to ' + email);
 }
 
 // ------------------------- Weekly publish + email ---------------------------
