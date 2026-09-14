@@ -47,7 +47,9 @@ the pick dropdowns, the week title, and the lines list in the body.
 - Title: **"Week N Pick'em"** (auto-set), rules/payouts in the description.
 - Collects respondent **email** + a **Name** field.
 - **Pick #1–5**: dropdowns listing every bet that week — both spread sides plus
-  Over/Under per game, e.g. `GB -7.5`, `ATL +7.5`, `ATL @ GB Over 46.5`.
+  Over/Under per game, e.g. `GB -7.5`, `ATL +7.5`, `ATL @ GB Over 46.5`, plus a
+  **`No pick`** option (for late entries or games that already kicked off; scored
+  as 0).
 - **Points to Bet on Pick #1–5**: dropdowns 1–6.
 - **SUPER-PICK**: dropdown (Pick #1–5 or N/A).
 
@@ -62,6 +64,12 @@ each new row with a **`Week`** column, taken from whatever week the form is
 currently set to — so you can filter/sort results by week without players ever
 picking the week themselves. The `Week` column is added to the right of the
 Forms-generated columns the first time someone submits.
+
+The same on-submit trigger **emails each respondent a confirmation** listing the
+picks they just submitted, so they know it registered and can remember their
+picks. Resubmitting creates a new row; the confirmation tells players their most
+recent submission is the one that counts — so season scoring should dedupe by
+keeping the latest submission per email per week.
 
 ## Emailing the group (free, via Gmail)
 
