@@ -75,6 +75,25 @@ function currentWeekParams_() {
   return { week: p.week, year: p.year, seasontype: p.seasontype };
 }
 
+/**
+ * The week to PUBLISH lines for. ESPN keeps the just-finished week as "current"
+ * through Tuesday night, and completed games have no odds — so if that week's
+ * slate has already kicked off, advance to the next week (the upcoming games).
+ * This is what makes a Tuesday-afternoon run post NEXT week's lines, not last
+ * week's. (Scoring uses currentWeekParams_ instead — it wants the finished week.)
+ */
+function resolvePublishWeek_() {
+  var w = currentWeekParams_().week;
+  var games = parseGames_(espnFetch_(w));
+  var now = Date.now();
+  for (var i = 0; i < games.length; i++) {
+    if (games[i].kickoff && new Date(games[i].kickoff).getTime() > now) {
+      return w; // this week still has games in the future — publish it
+    }
+  }
+  return w + 1; // whole slate already kicked off — move to the upcoming week
+}
+
 // ----------------------------- Parsing --------------------------------------
 
 /**
@@ -241,7 +260,7 @@ function setupForm() {
 
 // ----------------------------- Weekly update --------------------------------
 
-/** Update the form for ESPN's current week. Use this on the trigger. */
+/** Update the form for the upcoming week (auto-detected). Used by the trigger. */
 function updateCurrentWeek() {
   updateWeek(null);
 }
@@ -252,7 +271,7 @@ function updateWeek(week) {
   var formId = props.getProperty(PROP_FORM_ID);
   if (!formId) throw new Error('Run setupForm() first.');
 
-  if (week == null) week = currentWeekParams_().week;
+  if (week == null) week = resolvePublishWeek_(); // upcoming week, not the finished one
 
   var json = espnFetch_(week);
   var games = parseGames_(json);
