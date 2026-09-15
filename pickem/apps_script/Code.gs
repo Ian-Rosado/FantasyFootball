@@ -262,7 +262,7 @@ function setupForm() {
 
 /** Update the form for the upcoming week (auto-detected). Used by the trigger. */
 function updateCurrentWeek() {
-  updateWeek(null);
+  return updateWeek(null);
 }
 
 /** Update the form for a specific week (or null for current). */
@@ -293,7 +293,8 @@ function updateWeek(week) {
     '\n\n' + linesText +
     '\n\n— Lines: DraftKings via ESPN, pulled ' + stamp + '. —';
   if (built.missing.length) {
-    desc += '\nNote: no line yet for ' + built.missing.join(', ') + '.';
+    desc += '\nNote: these games have already started, or do not have lines: ' +
+      built.missing.join(', ') + '.';
   }
   form.setDescription(desc);
 
@@ -304,7 +305,15 @@ function updateWeek(week) {
 
   Logger.log('Updated to Week ' + week + ': ' + built.options.length +
     ' bet options across ' + games.length + ' games.' +
-    (built.missing.length ? ' Missing: ' + built.missing.join(', ') : ''));
+    (built.missing.length ? ' Started/no line: ' + built.missing.join(', ') : ''));
+
+  return {
+    week: week,
+    gameCount: games.length,
+    optionCount: built.options.length,
+    missing: built.missing,
+    publishedUrl: form.getPublishedUrl()
+  };
 }
 
 // ----------------------- Response-sheet week stamping -----------------------
@@ -378,18 +387,17 @@ function sendConfirmation_(headers, rowVals, week) {
 // ------------------------- Weekly publish + email ---------------------------
 
 /**
- * The scheduled entry point: refresh the current week's lines AND email the
- * group the form link. Kept separate from updateCurrentWeek() so a manual
- * refresh never fires an email.
+ * The scheduled entry point: refresh the upcoming week's lines, email the group
+ * the form link, and send the admin a run summary. Kept separate from
+ * updateCurrentWeek() so a manual refresh never fires the group email.
  */
 function weeklyPublish() {
-  updateCurrentWeek();
+  var summary = updateCurrentWeek();
 
   var props = PropertiesService.getScriptProperties();
-  var week = props.getProperty(PROP_CURRENT_WEEK);
+  var week = summary.week;
   var lines = props.getProperty(PROP_LAST_LINES) || '';
-  var form = FormApp.openById(props.getProperty(PROP_FORM_ID));
-  var url = form.getPublishedUrl();
+  var url = summary.publishedUrl;
 
   var subject = 'Week ' + week + ' Pick’em is live';
   var body =
@@ -398,6 +406,40 @@ function weeklyPublish() {
     lines + '\n\n' +
     'Get your picks in before kickoff. Good luck!';
   sendGroupEmail_(subject, body);
+
+  sendAdminConfirmation_(summary);
+}
+
+/**
+ * Email the admin (you) a summary of the weekly run, so a mis-targeted or empty
+ * publish is obvious without opening the Executions log. Goes to ADMIN_EMAIL if
+ * set (via setAdminEmail), otherwise the script owner's address.
+ */
+function sendAdminConfirmation_(summary) {
+  var admin = PropertiesService.getScriptProperties().getProperty('ADMIN_EMAIL') ||
+    Session.getEffectiveUser().getEmail();
+  if (!admin) { Logger.log('No admin address; skipping confirmation.'); return; }
+
+  var flags = [];
+  if (summary.gameCount === 0) flags.push('NO GAMES returned');
+  if (summary.optionCount <= 1) flags.push('NO pickable lines'); // 1 = just "No pick"
+  if (summary.missing.length) flags.push(summary.missing.length + ' game(s) started/no line');
+  var health = flags.length ? 'CHECK: ' + flags.join('; ') : 'Looks good.';
+
+  var body =
+    'Week ' + summary.week + ' pick’em published. ' + health + '\n\n' +
+    'Games: ' + summary.gameCount + '\n' +
+    'Pickable options: ' + (summary.optionCount - 1) + ' (+ "No pick")\n' +
+    (summary.missing.length ? 'Started / no line: ' + summary.missing.join(', ') + '\n' : '') +
+    'Form: ' + summary.publishedUrl;
+  MailApp.sendEmail({ to: admin, subject: 'Pick’em published: Week ' + summary.week + ' — ' + health, body: body });
+  Logger.log('Admin confirmation sent to ' + admin);
+}
+
+/** Set where the weekly admin confirmation goes (defaults to the script owner). */
+function setAdminEmail() {
+  PropertiesService.getScriptProperties().setProperty('ADMIN_EMAIL', 'you@example.com');
+  Logger.log('ADMIN_EMAIL saved.');
 }
 
 /**
