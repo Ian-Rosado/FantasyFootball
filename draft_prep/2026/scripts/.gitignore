@@ -1,0 +1,2 @@
+# Local ESPN auth cookies for private-league reads — NEVER commit these.
+.espn_cookies.json
