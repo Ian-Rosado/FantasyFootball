@@ -1,27 +1,30 @@
 #!/usr/bin/env python3
-"""DyNasty (Sleeper) defense-streaming helper.
+"""DyNasty (Sleeper) defense-streaming helper - multi-week.
 
-Lists the D/STs currently available in the league with their upcoming matchup,
-so you can stream a defense against a weak opponent each week.
+Shows which D/STs are AVAILABLE in the league alongside their matchups for this
+week and the next 1-2, plus YOUR rostered defenses' upcoming schedule, so you can
+spot a rough week and grab a good streaming matchup before rivals do.
 
 Availability comes from the Sleeper public read API: a team defense's player_id
 IS the team abbreviation, so "available" = all 32 teams minus every DEF id that
-shows up on a roster (no need for the 5 MB /players/nfl dump).
-
-Matchups come from ESPN's public CDN scoreboard (Sleeper doesn't expose the NFL
-schedule). Re-run each week; it reads the current week from Sleeper automatically.
+shows up on a roster (no need for the 5 MB /players/nfl dump). Matchups come from
+ESPN's public CDN scoreboard (Sleeper doesn't expose the NFL schedule).
 
 Scoring note: unlike Gridiron Grind, THIS league scores points- and yards-allowed
-heavily (shutout +5, and a sliding scale down to -4 for 35+ pts / -7 for 550+ yds),
-on top of sacks/turnovers/TDs. So target good defenses facing WEAK, LOW-SCORING,
-turnover-prone offenses (see TARGETS) — game script matters as much as the D itself.
+heavily (shutout +5, sliding down to -4 for 35+ pts / -7 for 550+ yds), on top of
+sacks/turnovers/TDs. So target good defenses facing WEAK, LOW-SCORING, turnover-prone
+offenses (* = opponent is in TARGETS) - game script matters as much as the D itself.
+TARGETS is a hand-maintained list; refresh it from current data every couple weeks.
 
-Usage:  python sleeper_defense_streaming.py
+Usage:  python sleeper_defense_streaming.py [--week N] [--ahead 2]
+        --week   first week to show (default: auto-detect from Sleeper)
+        --ahead  extra weeks to look ahead (default 2)
 Std-lib only (urllib/json).
 """
-import urllib.request, urllib.error, json, time
+import urllib.request, urllib.error, json, time, argparse
 
 LEAGUE_ID = '1358499663992348672'          # DyNasty (10-team, 1QB, .5 PPR, 2 FLEX)
+MY_USER   = 'IanPooHead'                     # Ian = "Team L.O.B"
 SLEEPER   = 'https://api.sleeper.app/v1'
 ESPN_SB   = 'https://cdn.espn.com/core/nfl/scoreboard?xhr=1'
 
@@ -32,8 +35,8 @@ ALL_TEAMS = {'ARI','ATL','BAL','BUF','CAR','CHI','CIN','CLE','DAL','DEN','DET',
 # ESPN uses a few different abbreviations than Sleeper -> normalize ESPN -> Sleeper.
 ESPN2SLEEPER = {'WSH': 'WAS', 'JAC': 'JAX', 'LVR': 'LV'}
 
-# Weak / low-scoring / turnover-prone offenses to attack (revisit with real data
-# after ~Week 4). Streaming a good D INTO one of these is the play.
+# Weak / low-scoring / turnover-prone offenses to attack. HAND-MAINTAINED HEURISTIC -
+# refresh from current data every couple weeks. Streaming a good D INTO one is the play.
 TARGETS = {'LV', 'CLE', 'CAR', 'NO', 'TEN', 'NYG', 'NYJ', 'IND', 'ARI'}
 
 
@@ -53,28 +56,31 @@ def norm(ab):
     return ESPN2SLEEPER.get(ab, ab)
 
 
-def current_week():
+def nfl_state():
     st = get(f'{SLEEPER}/state/nfl')
     # in-season use 'week'; during the preseason 'week' can be 0, so fall back to 1
-    return st.get('week') or st.get('display_week') or 1, st.get('season')
+    return (st.get('week') or st.get('display_week') or 1), st.get('season')
 
 
-def owned_defenses():
-    rosters = get(f'{SLEEPER}/league/{LEAGUE_ID}/rosters')
-    owned = set()
-    for r in rosters:
-        for pid in (r.get('players') or []):
-            if pid in ALL_TEAMS:                      # a DEF's player_id is its team code
-                owned.add(pid)
-    return owned
+def owned_and_mine():
+    """Return (all owned DEF team codes, set of MY rostered DEF team codes)."""
+    users = get(f'{SLEEPER}/league/{LEAGUE_ID}/users')
+    my_id = next((u['user_id'] for u in users
+                  if u.get('display_name', '').lower() == MY_USER.lower()), None)
+    owned, mine = set(), set()
+    for r in get(f'{SLEEPER}/league/{LEAGUE_ID}/rosters'):
+        defs = {pid for pid in (r.get('players') or []) if pid in ALL_TEAMS}
+        owned |= defs
+        if r.get('owner_id') == my_id:
+            mine |= defs
+    return owned, mine
 
 
-def matchups(week, season):
+def scoreboard(week, season):
     d = get(f'{ESPN_SB}&week={week}&year={season}&seasontype=2')
     out = {}
     for e in d.get('content', {}).get('sbData', {}).get('events', []):
-        comp = e['competitions'][0]['competitors']
-        m = {c['homeAway']: norm(c['team']['abbreviation']) for c in comp}
+        m = {c['homeAway']: norm(c['team']['abbreviation']) for c in e['competitions'][0]['competitors']}
         home, away = m.get('home'), m.get('away')
         if home and away:
             out[home] = ('vs ' + away, away)
@@ -82,29 +88,52 @@ def matchups(week, season):
     return out
 
 
+def cell(games, team):
+    mu, opp = games.get(team, ('bye', None))
+    return f"{mu:<7}{'*' if opp in TARGETS else ' '}"
+
+
 def main():
-    week, season = current_week()
-    owned = owned_defenses()
-    avail = sorted(ALL_TEAMS - owned)
-    games = matchups(week, season)
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--week', type=int, default=0, help='first week to show (default: auto)')
+    ap.add_argument('--ahead', type=int, default=2, help='extra weeks to look ahead')
+    args = ap.parse_args()
 
-    print(f"=== AVAILABLE D/ST - Week {week} {season} ===   (* faces a weak/low-scoring offense)")
-    rows = []
-    for tm in avail:
-        matchup, opp = games.get(tm, ('bye', None))
-        rows.append((tm, matchup, opp))
-    # bye teams last, then TARGET matchups first, then alphabetical
-    for tm, matchup, opp in sorted(rows, key=lambda x: (x[1] == 'bye', opp_rank(x[2]), x[0])):
-        star = '  * TARGET' if opp in TARGETS else ''
-        print(f"{tm:<4} {matchup:<9}{star}")
+    cur_week, season = nfl_state()
+    start = args.week or cur_week
+    weeks = list(range(start, start + args.ahead + 1))
 
-    onbye = [tm for tm, matchup, _ in rows if matchup == 'bye']
-    if onbye:
-        print(f"\n(on bye this week: {', '.join(onbye)})")
+    owned, mine = owned_and_mine()
+    available = ALL_TEAMS - owned
+    sched = {w: scoreboard(w, season) for w in weeks}
 
+    def weak_weeks(team):
+        return sum(1 for w in weeks if sched[w].get(team, ('', None))[1] in TARGETS)
 
-def opp_rank(opp):
-    return 0 if opp in TARGETS else 1
+    print(f"DyNasty (Sleeper) D/ST - weeks {weeks}, season {season}.  * = opponent is a "
+          f"weak/low-scoring offense (good for this league's pts/yards-allowed scoring).\n")
+    hdr = 'D/ST  ' + '  '.join(f'Wk{w:<6}' for w in weeks)
+
+    print('=== AVAILABLE D/ST - matchup grid (most good matchups first) ===')
+    print(hdr)
+    for team in sorted(available, key=lambda t: (-weak_weeks(t), t)):
+        print(f"{team:<5} " + '  '.join(cell(sched[w], team) for w in weeks))
+
+    if mine:
+        print('\n=== YOUR ROSTERED D/ST - upcoming schedule ===')
+        print(hdr)
+        for team in sorted(mine):
+            print(f"{team:<5} " + '  '.join(cell(sched[w], team) for w in weeks))
+
+    later = weeks[1:]
+    preempt = [t for t in sorted(available)
+               if any(sched[w].get(t, ('', None))[1] in TARGETS for w in later)]
+    if preempt:
+        print('\n=== GRAB-AHEAD: available now, weak opponent in an upcoming week ===')
+        for t in preempt:
+            hits = [f"Wk{w} {sched[w][t][0]}" for w in later
+                    if sched[w].get(t, ('', None))[1] in TARGETS]
+            print(f"  {t:<4} " + ', '.join(hits))
 
 
 if __name__ == '__main__':
