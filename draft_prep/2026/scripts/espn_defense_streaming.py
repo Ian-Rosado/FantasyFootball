@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""Eat GLORP (ESPN, private league) defense-streaming helper - multi-week.
+"""Eat GLORP (ESPN, private league) defense-streaming helper - multi-week, projection-ranked.
 
-Shows which D/STs are AVAILABLE in the league alongside their matchups for this
-week and the next 1-2, plus YOUR rostered defenses' upcoming schedule, so you can
-spot a rough week and grab a good streaming matchup before rivals do.
+Shows AVAILABLE D/STs (and your own) with ESPN's PROJECTED points for this week and
+the next 1-2 - in THIS league's scoring - alongside each week's opponent. Ranks by
+total projected points across the window, so the payoff is the lookahead: spotting a
+defense worth grabbing now not because it's the top play this week, but because it has
+the best run of matchups over the next couple weeks (grab it before rivals do).
 
-Availability: read the league's rosters (ESPN mRoster view), collect every rostered
-D/ST's pro team, and subtract from the 32 NFL teams. Matchups come from ESPN's public
-CDN scoreboard. This is a PRIVATE league, so reads need your espn_s2 + SWID cookies -
-see load_cookies() (env vars or a local .espn_cookies.json, which is git-ignored).
+Availability: the league's rosters (mRoster) -> every rostered D/ST's pro team, subtracted
+from the 32 NFL teams. Projections + opponents: ESPN's kona_player_info (per week) and the
+public CDN scoreboard. Private league, so reads need your espn_s2 + SWID cookies - see
+load_cookies() (env vars or a git-ignored .espn_cookies.json).
 
-Scoring note: this league scores points- and yards-allowed heavily (PA0 +5 ... plus
-YA tiers) on top of sacks/turnovers/return TDs. So target good defenses facing WEAK,
-LOW-SCORING offenses (* = opponent in TARGETS, a hand-maintained list to refresh).
+Note: unlike the Fleaflicker/Sleeper defense scripts (which flag opponents from a
+hand-maintained TARGETS list), this one uses ESPN's real weekly projections - more
+accurate, and the reason it lives only on the ESPN side (ESPN uniquely exposes them).
 
 Usage:  python espn_defense_streaming.py [--week N] [--ahead 2]
 Std-lib only (urllib/json).
@@ -26,16 +28,11 @@ SCRIPTS   = os.path.dirname(os.path.abspath(__file__))
 BASE      = f'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/{SEASON}/segments/0/leagues/{LEAGUE_ID}'
 ESPN_SB   = 'https://cdn.espn.com/core/nfl/scoreboard?xhr=1'
 
-# ESPN proTeamId -> abbreviation (matches the CDN scoreboard's abbreviations).
 PROTEAM = {1:'ATL',2:'BUF',3:'CHI',4:'CIN',5:'CLE',6:'DAL',7:'DEN',8:'DET',9:'GB',
            10:'TEN',11:'IND',12:'KC',13:'LV',14:'LAR',15:'MIA',16:'MIN',17:'NE',
            18:'NO',19:'NYG',20:'NYJ',21:'PHI',22:'ARI',23:'PIT',24:'LAC',25:'SF',
            26:'SEA',27:'TB',28:'WSH',29:'CAR',30:'JAX',33:'BAL',34:'HOU'}
 ALL_TEAMS = set(PROTEAM.values())
-
-# Weak / low-scoring / turnover-prone offenses to attack. HAND-MAINTAINED - refresh
-# from current data every couple weeks. Streaming a good D INTO one is the play.
-TARGETS = {'LV', 'CLE', 'CAR', 'NO', 'TEN', 'NYG', 'NYJ', 'IND', 'ARI'}
 
 
 def load_cookies():
@@ -50,12 +47,13 @@ def load_cookies():
                      f"{path} (copy .espn_cookies.example.json). Private-league reads need them.")
 
 
-def espn_get(url):
+def espn_get(url, xff=None):
     s2, swid = load_cookies()
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0',
-                                               'Cookie': f'espn_s2={s2}; SWID={swid}'})
+    h = {'User-Agent': 'Mozilla/5.0', 'Cookie': f'espn_s2={s2}; SWID={swid}'}
+    if xff:
+        h['X-Fantasy-Filter'] = json.dumps(xff)
     try:
-        return json.load(urllib.request.urlopen(req))
+        return json.load(urllib.request.urlopen(urllib.request.Request(url, headers=h)))
     except urllib.error.HTTPError as e:
         if e.code in (401, 403):
             raise SystemExit(f"ESPN auth failed ({e.code}). Your espn_s2/SWID cookies are likely "
@@ -72,13 +70,10 @@ def owned_and_mine():
     owned, mine = set(), set()
     for t in d.get('teams', []):
         name = (t.get('name') or f"{t.get('location','')} {t.get('nickname','')}").strip()
-        defs = set()
-        for e in (t.get('roster') or {}).get('entries', []):
-            p = e['playerPoolEntry']['player']
-            if p.get('defaultPositionId') == 16:                 # 16 = D/ST
-                ab = PROTEAM.get(p.get('proTeamId'))
-                if ab:
-                    defs.add(ab)
+        defs = {PROTEAM.get(e['playerPoolEntry']['player'].get('proTeamId'))
+                for e in (t.get('roster') or {}).get('entries', [])
+                if e['playerPoolEntry']['player'].get('defaultPositionId') == 16}
+        defs.discard(None)
         owned |= defs
         if name.lower() == MY_TEAM.lower():
             mine |= defs
@@ -92,8 +87,25 @@ def scoreboard(week):
         m = {c['homeAway']: c['team']['abbreviation'] for c in e['competitions'][0]['competitors']}
         home, away = m.get('home'), m.get('away')
         if home and away:
-            out[home] = ('vs ' + away, away)
-            out[away] = ('@' + home, home)
+            out[home], out[away] = 'vs ' + away, '@' + home
+    return out
+
+
+def projections(week):
+    """{team_abbrev: projected fantasy points} for a week, in this league's scoring."""
+    xff = {'players': {'filterStatus': {'value': ['ONTEAM', 'FREEAGENT', 'WAIVERS']},
+                       'filterSlotIds': {'value': [16]}, 'limit': 50,
+                       'sortPercOwned': {'sortAsc': False, 'sortPriority': 1}}}
+    d = espn_get(BASE + f'?view=kona_player_info&scoringPeriodId={week}', xff)
+    out = {}
+    for pe in d.get('players', []):
+        p = pe['player']
+        ab = PROTEAM.get(p.get('proTeamId'))
+        if ab is None:
+            continue
+        for s in p.get('stats', []):
+            if s.get('scoringPeriodId') == week and s.get('statSourceId') == 1:
+                out[ab] = s.get('appliedTotal')
     return out
 
 
@@ -104,11 +116,6 @@ def detect_week():
     done = evs and all(e['competitions'][0].get('status', {}).get('type', {}).get('completed')
                        for e in evs if e.get('competitions'))
     return n + 1 if done else n
-
-
-def cell(games, team):
-    mu, opp = games.get(team, ('bye', None))
-    return f"{mu:<7}{'*' if opp in TARGETS else ' '}"
 
 
 def main():
@@ -122,35 +129,53 @@ def main():
 
     owned, mine = owned_and_mine()
     available = ALL_TEAMS - owned
-    sched = {w: scoreboard(w) for w in weeks}
+    sb = {w: scoreboard(w) for w in weeks}
+    pr = {w: projections(w) for w in weeks}
 
-    def weak_weeks(t):
-        return sum(1 for w in weeks if sched[w].get(t, ('', None))[1] in TARGETS)
+    def onbye(w, t):
+        return t not in sb[w]
 
-    print(f"Eat GLORP (ESPN) D/ST - weeks {weeks}, season {SEASON}.  * = opponent is a "
-          f"weak/low-scoring offense (good for this league's pts/yards-allowed scoring).\n")
-    hdr = 'D/ST  ' + '  '.join(f'Wk{w:<6}' for w in weeks)
+    def cell(w, t):
+        if onbye(w, t):
+            return f"{'bye':<7}{'':>5}"
+        p = pr[w].get(t)
+        return f"{sb[w][t]:<7}{('-' if p is None else f'{p:.1f}'):>5}"
 
-    print('=== AVAILABLE D/ST - matchup grid (most good matchups first) ===')
+    def total(t):
+        return sum(pr[w].get(t) or 0 for w in weeks if not onbye(w, t))
+
+    hdr = 'D/ST  ' + '  '.join(f'{("Wk"+str(w)):<12}' for w in weeks) + '  Total'
+    print(f"Eat GLORP (ESPN) D/ST - weeks {weeks}, season {SEASON}. ESPN projected pts "
+          f"(this league's scoring) + opponent; ranked by total across the window.\n")
+
+    print('=== AVAILABLE D/ST (best total projected first) ===')
     print(hdr)
-    for team in sorted(available, key=lambda t: (-weak_weeks(t), t)):
-        print(f"{team:<5} " + '  '.join(cell(sched[w], team) for w in weeks))
+    avail_sorted = sorted(available, key=lambda t: -total(t))
+    for t in avail_sorted:
+        print(f"{t:<5} " + '  '.join(cell(w, t) for w in weeks) + f"  {total(t):5.1f}")
 
     if mine:
-        print('\n=== YOUR ROSTERED D/ST - upcoming schedule ===')
+        print('\n=== YOUR ROSTERED D/ST ===')
         print(hdr)
-        for team in sorted(mine):
-            print(f"{team:<5} " + '  '.join(cell(sched[w], team) for w in weeks))
+        for t in sorted(mine, key=lambda t: -total(t)):
+            print(f"{t:<5} " + '  '.join(cell(w, t) for w in weeks) + f"  {total(t):5.1f}")
 
-    later = weeks[1:]
-    preempt = [t for t in sorted(available)
-               if any(sched[w].get(t, ('', None))[1] in TARGETS for w in later)]
-    if preempt:
-        print('\n=== GRAB-AHEAD: available now, weak opponent in an upcoming week ===')
-        for t in preempt:
-            hits = [f"Wk{w} {sched[w][t][0]}" for w in later
-                    if sched[w].get(t, ('', None))[1] in TARGETS]
-            print(f"  {t:<4} " + ', '.join(hits))
+    # Lookahead: the this-week best vs the best over the window, and each later week's best.
+    def best_avail(w):
+        cands = [(pr[w].get(t), t) for t in available if not onbye(w, t) and pr[w].get(t) is not None]
+        return max(cands) if cands else (None, None)
+
+    print('\n=== LOOKAHEAD ===')
+    tw_p, tw_t = best_avail(start)
+    print(f"  Best available THIS week (Wk{start}): {tw_t} ({tw_p:.1f})")
+    print(f"  Best available by {len(weeks)}-week total: {avail_sorted[0]} ({total(avail_sorted[0]):.1f})")
+    for w in weeks[1:]:
+        p, t = best_avail(w)
+        if t:
+            print(f"  Best available Wk{w}: {t} ({p:.1f})  [{sb[w].get(t,'bye')}]")
+    if avail_sorted[0] != tw_t:
+        print(f"  -> {avail_sorted[0]} isn't the top Week {start} play but has the best run - "
+              f"a grab-ahead if you can hold it.")
 
 
 if __name__ == '__main__':
