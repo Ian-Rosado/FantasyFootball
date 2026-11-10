@@ -19,7 +19,7 @@ accurate, and the reason it lives only on the ESPN side (ESPN uniquely exposes t
 Usage:  python espn_defense_streaming.py [--week N] [--ahead 2]
 Std-lib only (urllib/json).
 """
-import urllib.request, urllib.error, json, os, argparse
+import urllib.request, urllib.error, json, os, argparse, collections
 
 LEAGUE_ID = '686982204'
 SEASON    = 2026
@@ -144,38 +144,34 @@ def main():
     def total(t):
         return sum(pr[w].get(t) or 0 for w in weeks if not onbye(w, t))
 
-    hdr = 'D/ST  ' + '  '.join(f'{("Wk"+str(w)):<12}' for w in weeks) + '  Total'
     print(f"Eat GLORP (ESPN) D/ST - weeks {weeks}, season {SEASON}. ESPN projected pts "
-          f"(this league's scoring) + opponent; ranked by total across the window.\n")
+          f"(this league's scoring). Swapping a D is free, so stream the best each week.\n")
 
-    print('=== AVAILABLE D/ST (best total projected first) ===')
-    print(hdr)
-    avail_sorted = sorted(available, key=lambda t: -total(t))
-    for t in avail_sorted:
-        print(f"{t:<5} " + '  '.join(cell(w, t) for w in weeks) + f"  {total(t):5.1f}")
+    def ranked(w):  # available defenses this week, best projection first
+        c = [(pr[w].get(t), t) for t in available if not onbye(w, t) and pr[w].get(t) is not None]
+        return sorted(c, reverse=True)
+
+    print('=== BEST AVAILABLE EACH WEEK (grab the top play before rivals do) ===')
+    topN = {}
+    for w in weeks:
+        r = ranked(w)[:5]
+        topN[w] = [t for _, t in r]
+        print(f"  Wk{w}: " + ' | '.join(f"{t} {p:.1f} {sb[w][t]}" for p, t in r))
+
+    # multi-week holds: an available D in the top 5 of 2+ of these weeks
+    appear = collections.Counter(t for w in weeks for t in topN[w])
+    holds = sorted((t for t, n in appear.items() if n >= 2),
+                   key=lambda t: -sum(pr[w].get(t) or 0 for w in weeks if t in topN[w]))
+    if holds:
+        print('\n=== MULTI-WEEK HOLDS (top-5 in 2+ of these weeks - grab and keep) ===')
+        for t in holds:
+            wl = ', '.join(f"Wk{w} {pr[w].get(t):.1f}" for w in weeks if not onbye(w, t) and t in topN[w])
+            print(f"  {t:<4} {wl}")
 
     if mine:
-        print('\n=== YOUR ROSTERED D/ST ===')
-        print(hdr)
+        print('\n=== YOUR ROSTERED D/ST (for comparison) ===')
         for t in sorted(mine, key=lambda t: -total(t)):
-            print(f"{t:<5} " + '  '.join(cell(w, t) for w in weeks) + f"  {total(t):5.1f}")
-
-    # Lookahead: the this-week best vs the best over the window, and each later week's best.
-    def best_avail(w):
-        cands = [(pr[w].get(t), t) for t in available if not onbye(w, t) and pr[w].get(t) is not None]
-        return max(cands) if cands else (None, None)
-
-    print('\n=== LOOKAHEAD ===')
-    tw_p, tw_t = best_avail(start)
-    print(f"  Best available THIS week (Wk{start}): {tw_t} ({tw_p:.1f})")
-    print(f"  Best available by {len(weeks)}-week total: {avail_sorted[0]} ({total(avail_sorted[0]):.1f})")
-    for w in weeks[1:]:
-        p, t = best_avail(w)
-        if t:
-            print(f"  Best available Wk{w}: {t} ({p:.1f})  [{sb[w].get(t,'bye')}]")
-    if avail_sorted[0] != tw_t:
-        print(f"  -> {avail_sorted[0]} isn't the top Week {start} play but has the best run - "
-              f"a grab-ahead if you can hold it.")
+            print(f"  {t:<4} " + '  '.join(cell(w, t) for w in weeks))
 
 
 if __name__ == '__main__':
